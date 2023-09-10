@@ -34,8 +34,6 @@ class LuaUtils : LuaTable() {
             }
         })
 
-        this.set("bukkit", CoerceKotlinToLua.coerce(Bukkit::class.java))
-
         this.set("runTask", object: VarArgFunction() {
             override fun invoke(args: Varargs?): Varargs {
                 if (args == null || args.narg() != 1) {
