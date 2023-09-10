@@ -10,12 +10,21 @@ import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
 import xyz.galaxyy.mclua.MCLua
 
+
 class LuaCommandHandler(private val callback: LuaFunction, private val metadata: LuaTable) : Command(metadata.get("name").tojstring()) {
     init {
         this.description = this.metadata.get("description").tojstring()
         this.usage = this.metadata.get("usage").tojstring()
-        this.aliases = this.metadata.get("aliases").tojstring().split(",").toMutableList()
         this.permission = this.metadata.get("permission").tojstring()
+        if (this.metadata.get("aliases").isnil()) {
+            this.aliases = mutableListOf()
+        } else {
+            val aliases: MutableList<String> = ArrayList()
+            for (i in 1..this.metadata.get("aliases").length()) {
+                aliases.add(this.metadata.get("aliases").get(i).tojstring())
+            }
+            this.aliases = aliases
+        }
     }
     override fun execute(sender: CommandSender, commandLabel: String, args: Array<out String>?): Boolean {
         if (this.metadata.get("consoleOnly").toboolean() && sender !is Player) {
