@@ -4,12 +4,12 @@ import com.github.only52607.luakt.CoerceKotlinToLua
 import com.github.only52607.luakt.lib.LuaKotlinExLib
 import com.github.only52607.luakt.lib.LuaKotlinLib
 import org.bukkit.plugin.java.JavaPlugin
-import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.jse.CoerceJavaToLua
 import org.luaj.vm2.lib.jse.JsePlatform
 import xyz.galaxyy.mclua.lua.LuaScript
 import xyz.galaxyy.mclua.lua.LuaUtils
 import xyz.galaxyy.mclua.lua.misc.PrintOverride
+import xyz.galaxyy.mclua.lua.wrappers.LuaEnumWrapper
 import xyz.galaxyy.mclua.lua.wrappers.LuaPluginWrapper
 import java.io.File
 
@@ -64,7 +64,7 @@ class MCLua : JavaPlugin() {
                 globals.set("plugin", CoerceKotlinToLua.coerce(pluginWrapper))
                 globals.set("print", CoerceJavaToLua.coerce(PrintOverride()))
                 globals.set("utils", CoerceKotlinToLua.coerce(LuaUtils()))
-                globals.set("enums", CoerceKotlinToLua.coerce(LuaUtils()))
+                globals.set("enums", CoerceKotlinToLua.coerce(LuaEnumWrapper()))
                 this.logger.info("Loading script ${file.name}")
                 globals.loadfile(file.path).call()
                 loadedScripts.add(script)
