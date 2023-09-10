@@ -13,9 +13,12 @@ import xyz.galaxyy.mclua.MCLua
 
 class LuaCommandHandler(private val callback: LuaFunction, private val metadata: LuaTable) : Command(metadata.get("name").tojstring()) {
     init {
-        this.description = this.metadata.get("description").tojstring()
-        this.usage = this.metadata.get("usage").tojstring()
-        this.permission = this.metadata.get("permission").tojstring()
+        if (!this.metadata.get("description").isnil())
+            this.description = this.metadata.get("description").tojstring()
+        if (!this.metadata.get("usage").isnil())
+            this.usage = this.metadata.get("usage").tojstring()
+        if (!this.metadata.get("permission").isnil())
+            this.permission = this.metadata.get("permission").tojstring()
         if (this.metadata.get("aliases").isnil()) {
             this.aliases = mutableListOf()
         } else {
