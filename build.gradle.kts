@@ -15,7 +15,10 @@ repositories {
     mavenCentral()
     maven("https://repo.purpurmc.org/snapshots")
     maven("https://jitpack.io")
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
+
+val cloudVersion: String by project
 
 dependencies {
     testImplementation(kotlin("test"))
@@ -25,6 +28,9 @@ dependencies {
     library("com.github.only52607.luakt:luakt-core:2.6.1")
     library("com.github.only52607.luakt:luakt-extension:2.6.1")
     library("com.github.only52607.luakt:luakt-luaj:2.6.1")
+    library("cloud.commandframework:cloud-paper:$cloudVersion")
+    library("cloud.commandframework:cloud-brigadier:$cloudVersion")
+    library("cloud.commandframework:cloud-annotations:$cloudVersion")
 }
 
 paper {

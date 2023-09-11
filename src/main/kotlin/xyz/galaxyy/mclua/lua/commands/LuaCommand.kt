@@ -7,8 +7,10 @@ import org.luaj.vm2.Varargs
 import org.luaj.vm2.lib.OneArgFunction
 import org.luaj.vm2.lib.VarArgFunction
 import xyz.galaxyy.mclua.MCLua
+import xyz.galaxyy.mclua.lua.LuaScript
+import xyz.galaxyy.mclua.lua.wrappers.LuaPluginWrapper
 
-class LuaCommand : LuaTable() {
+class LuaCommand(val pluginWrapper: LuaPluginWrapper) : LuaTable() {
     init {
         this.set("register", object : VarArgFunction() {
             override fun invoke(args: Varargs): Varargs {
@@ -19,10 +21,7 @@ class LuaCommand : LuaTable() {
                 val callback: LuaFunction = args.checkfunction(1)
                 val metadata: LuaTable = args.checktable(2)
 
-                val command: LuaCommandHandler = LuaCommandHandler(callback, metadata)
-
-                MCLua.getInstance().server.commandMap.register("mclua", command)
-
+                pluginWrapper.registerCommand(callback, metadata)
                 return LuaValue.NIL
             }
         })
