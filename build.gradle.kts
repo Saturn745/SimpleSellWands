@@ -62,7 +62,7 @@ modrinth {
 hangarPublish {
     publications.register("plugin") {
         version.set(project.version as String) // use project version as publication version
-        id.set("hangar-project")
+        id.set("LuaLink")
         channel.set("Beta")
         changelog.set(System.getenv("GIT_COMMIT_MESSAGE")) // optional
 
