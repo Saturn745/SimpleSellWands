@@ -1,10 +1,12 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
     kotlin("jvm") version "1.9.0"
     id("net.minecrell.plugin-yml.paper") version "0.6.0"
     id("com.modrinth.minotaur") version "2.8.2"
+    id("io.papermc.hangar-publish-plugin") version "0.1.0"
     application
 }
 val buildNum = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
@@ -55,6 +57,24 @@ modrinth {
     gameVersions.addAll("1.20.1")
     loaders.addAll("paper", "purpur")
     changelog.set(System.getenv("GIT_COMMIT_MESSAGE"))
+}
+
+hangarPublish {
+    publications.register("plugin") {
+        version.set(project.version as String) // use project version as publication version
+        id.set("hangar-project")
+        channel.set("Beta")
+        changelog.set(System.getenv("GIT_COMMIT_MESSAGE")) // optional
+
+        apiKey.set(System.getenv("HANGAR_API_KEY"))
+
+        platforms {
+            register(Platforms.PAPER) {
+                jar.set(tasks.jar.flatMap { it.archiveFile })
+                platformVersions.set(listOf("1.20.1"))
+            }
+        }
+    }
 }
 
 
