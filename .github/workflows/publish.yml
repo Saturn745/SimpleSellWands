@@ -21,4 +21,6 @@ jobs:
       - name: Build and Publish to Modrinth
         run: |
           ./gradlew modrinth
+      - name: Build and Publish to Hangar
+        run: |
           ./gradlew publishPluginPublicationToHangar
