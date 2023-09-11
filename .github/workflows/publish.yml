@@ -10,6 +10,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[ci-skip]')"
     env:
       MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      HANGAR_API_KEY: ${{ secrets.HANGAR_API_KEY }}
       GIT_COMMIT_MESSAGE: ${{ join(github.event.commits.*.message, '<br>') }}
     steps:
       - uses: actions/checkout@v3
