@@ -22,14 +22,14 @@ plugin.onEnable(function()
     plugin.logger.info("Hello world command enabled!!!!!!!! Let's be annoying and make every script spam console when it loads")
 end)
 
-plugin.command.register(function(sender, args)
+plugin.registerSimpleCommand(function(sender, args)
     sender:sendRichMessage("<green>Hello, "..sender:getName())
 end, {
     name = "hello",
     description = "Hello world from MCLua"
 })
 
-plugin.command.register(function(sender, args)
+plugin.registerSimpleCommand(function(sender, args)
     if not utils.instanceOf(sender, "org.bukkit.entity.Player") then
         sender:sendRichMessage("<red>This command can only be ran by a player!")
         return
@@ -55,7 +55,7 @@ local function bringCommand(sender, args)
     if args[1] == "*" then
         -- Bring all online players to the command sender's location
         local senderLocation = sender:getLocation()
-        local onlinePlayers = plugin.server:getOnlinePlayers()
+        local onlinePlayers = plugin.getServer():getOnlinePlayers()
         for _, player in ipairs(totable(onlinePlayers)) do
             player:teleport(senderLocation)
             player:sendRichMessage("<green>You have been summoned by " .. sender:getName())
@@ -63,7 +63,7 @@ local function bringCommand(sender, args)
         sender:sendRichMessage("<green>You brought all players to your location!")
     else
         -- Bring a specific player to the command sender's location
-        local targetPlayer = plugin.server:getPlayer(args[1])
+        local targetPlayer = plugin.getServer():getPlayer(args[1])
         if targetPlayer then
             local senderLocation = sender:getLocation()
             targetPlayer:teleport(senderLocation)
@@ -84,7 +84,7 @@ end
 local function bringTabComplete(sender, alias, args)
     if #args == 1 then
         local query = args[1]:lower() -- Convert input query to lowercase for case-insensitive matching
-        local onlinePlayers = plugin.server:getOnlinePlayers()
+        local onlinePlayers = plugin.getServer():getOnlinePlayers()
         local suggestions = {}
         
         -- Filter player names based on the input query
@@ -107,7 +107,7 @@ local function bringTabComplete(sender, alias, args)
 end
 
 -- Register the /bring command
-plugin.command.register(bringCommand, {
+plugin.registerSimpleCommand(bringCommand, {
     name = "bring",
     description = "Bring a player to your location",
     usage = "/bring <player or *>",
@@ -119,7 +119,7 @@ plugin.command.register(bringCommand, {
 
 ```lua
 local function listen()
-    plugin.event.listen("org.bukkit.event.player.PlayerJoinEvent", function(event)
+    plugin.hook("org.bukkit.event.player.PlayerJoinEvent", function(event)
         local player = event:getPlayer()
         player:playSound(player:getLocation(), "entity.firework_rocket.launch", 1.0, 1.0)
         player:sendRichMessage("<green>Welcome back to the server, " .. player:getName() .. "!")

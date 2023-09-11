@@ -3,6 +3,7 @@ package xyz.galaxyy.mclua.lua.wrappers
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.EntityType
+import org.bukkit.persistence.PersistentDataType
 import org.luaj.vm2.LuaTable
 
 class LuaEnumWrapper : LuaTable() {

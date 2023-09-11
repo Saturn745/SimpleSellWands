@@ -4,18 +4,12 @@ import com.github.only52607.luakt.CoerceKotlinToLua
 import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
-import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.luaj.vm2.LuaError
-import org.luaj.vm2.LuaFunction
-import org.luaj.vm2.LuaTable
-import org.luaj.vm2.LuaValue
+import org.luaj.vm2.*
 import org.luaj.vm2.lib.VarArgFunction
-import org.luaj.vm2.lib.jse.CoerceJavaToLua
+import org.luaj.vm2.lib.ZeroArgFunction
 import xyz.galaxyy.mclua.MCLua
-import xyz.galaxyy.mclua.lua.commands.LuaCommand
 import xyz.galaxyy.mclua.lua.commands.LuaCommandHandler
-import xyz.galaxyy.mclua.lua.listeners.LuaListener
 import xyz.galaxyy.mclua.lua.misc.LuaLogger
 
 
@@ -66,20 +60,51 @@ class LuaPluginWrapper : LuaTable() {
             }
         })
 
+        this.set("registerSimpleCommand", object : VarArgFunction() {
+            override fun invoke(args: Varargs): Varargs {
+                if (args.narg() != 2 || !args.isfunction(1) || !args.istable(2)) {
+                    throw IllegalArgumentException("registerSimpleCommand expects 2 arguments: function, string")
+                }
+
+                val callback: LuaFunction = args.checkfunction(1)
+                val metadata: LuaTable = args.checktable(2)
+
+                this@LuaPluginWrapper.registerCommand(callback, metadata)
+                return LuaValue.NIL
+            }
+        })
+
+        this.set("hook", object: VarArgFunction() {
+            override fun invoke(args: Varargs): LuaValue {
+                val eventName: String = args.checkjstring(1)
+                val callback: LuaFunction = args.checkfunction(2)
+
+                if (eventName.isEmpty() || !callback.isfunction()) {
+                    throw IllegalArgumentException("hook expects 2 arguments: string, function")
+                }
+
+                this@LuaPluginWrapper.registerListener(eventName, callback)
+
+                return LuaValue.NIL
+            }
+        })
+
         this.set("logger", CoerceKotlinToLua.coerce(LuaLogger()))
-        this.set("server", CoerceKotlinToLua.coerce(Bukkit.getServer()))
-        this.set("command", CoerceKotlinToLua.coerce(LuaCommand(this)))
-        this.set("event", CoerceKotlinToLua.coerce(LuaListener(this)))
+        this.set("getServer", object: ZeroArgFunction() {
+            override fun call(): LuaValue {
+                return CoerceKotlinToLua.coerce(Bukkit.getServer())
+            }
+        })
     }
 
-    fun registerCommand(callback: LuaFunction, metadata: LuaTable) {
+    private fun registerCommand(callback: LuaFunction, metadata: LuaTable) {
         val command: LuaCommandHandler = LuaCommandHandler(callback, metadata)
 
         this.commands.add(command)
 
         MCLua.getInstance().server.commandMap.register("mclua", command)
     }
-    fun registerListener(event: String, callback: LuaFunction) {
+    private fun registerListener(event: String, callback: LuaFunction) {
         try {
             val eventClass = Class.forName(event)
             if (!Event::class.java.isAssignableFrom(eventClass)) {
