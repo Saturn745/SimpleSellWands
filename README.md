@@ -15,7 +15,9 @@ To use the LuaLink plugin, you need the following:
 <details>
 <summary>Examples</summary>
 
-### Hello command, and toggle flight command
+### **For more advanced examples see the [examples](https://github.com/Saturn745/LuaLink/tree/_examples) folder** 
+
+### Hello command
 ```lua
 plugin.onEnable(function()
     plugin.logger.info("Hello world command enabled!!!!!!!! Let's be annoying and make every script spam console when it loads")
@@ -27,92 +29,9 @@ end, {
     name = "hello",
     description = "Hello world from LuaLink"
 })
-
-plugin.registerSimpleCommand(function(sender, args)
-    if not utils.instanceOf(sender, "org.bukkit.entity.Player") then
-        sender:sendRichMessage("<red>This command can only be ran by a player!")
-        return
-    end
-    if not sender:isFlying() then
-        sender:setAllowFlight(true)
-        sender:setFlying(true)
-        sender:sendRichMessage("<green>Enabled flight!")
-    else
-        sender:setAllowFlight(false)
-        sender:setFlying(false)
-        sender:sendRichMessage("<red>Disabled flight!")
-    end
-end, {
-    name = "fly",
-    description = "Toggle flight"
-})
 ```
 
-### /bring command example
-```lua
-local function bringCommand(sender, args)
-    if args[1] == "*" then
-        -- Bring all online players to the command sender's location
-        local senderLocation = sender:getLocation()
-        local onlinePlayers = plugin.getServer():getOnlinePlayers()
-        for _, player in ipairs(totable(onlinePlayers)) do
-            player:teleport(senderLocation)
-            player:sendRichMessage("<green>You have been summoned by " .. sender:getName())
-        end
-        sender:sendRichMessage("<green>You brought all players to your location!")
-    else
-        -- Bring a specific player to the command sender's location
-        local targetPlayer = plugin.getServer():getPlayer(args[1])
-        if targetPlayer then
-            local senderLocation = sender:getLocation()
-            targetPlayer:teleport(senderLocation)
-            targetPlayer:sendRichMessage("<green>You have been summoned by " .. sender:getName())
-            sender:sendRichMessage("<green>You brought " .. targetPlayer:getName() .. " to your location!")
-        else
-            sender:sendRichMessage("<red>Player not found: " .. args[1])
-        end
-    end
-end
-
-local function startsWith(str, start)
-    return str:sub(1, #start) == start
-end
-
-local function bringTabComplete(sender, alias, args)
-    if #args == 1 then
-        local query = args[1]:lower() -- Convert input query to lowercase for case-insensitive matching
-        local onlinePlayers = plugin.getServer():getOnlinePlayers()
-        local suggestions = {}
-        
-        -- Filter player names based on the input query
-        for _, player in ipairs(totable(onlinePlayers)) do
-            local playerName = player:getName()
-            print(playerName:lower())
-            if startsWith(playerName:lower(), query) then
-                table.insert(suggestions, playerName)
-            end
-        end
-
-        -- Add "*" if it matches the query or is empty
-        if query == "" or query == "*" then
-            table.insert(suggestions, "*")
-        end
-
-        return suggestions
-    end
-    return {}
-end
-
--- Register the /bring command
-plugin.registerSimpleCommand(bringCommand, {
-    name = "bring",
-    description = "Bring a player to your location",
-    usage = "/bring <player or *>",
-    tabComplete = bringTabComplete
-})
-```
-
-### Event Handling
+### Welcomer | Event listener
 
 ```lua
 local function listen()
@@ -128,5 +47,4 @@ plugin.onEnable(function()
     listen()
 end)
 ```
-
 </details>
