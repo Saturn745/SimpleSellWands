@@ -49,22 +49,25 @@ class LuaCommandHandler(private val callback: LuaFunction, private val metadata:
         val tabCompleteFunction = this.metadata.get("tabComplete")
 
         if (tabCompleteFunction.isfunction()) {
-            // Convert the CommandSender, alias, and args to LuaValues
             val luaSender = CoerceKotlinToLua.coerce(sender)
             val luaAlias = LuaValue.valueOf(alias)
             val luaArgs = CoerceKotlinToLua.coerce(args)
 
-            // Call the tabComplete function and capture the result
             val result = tabCompleteFunction.call(luaSender, luaAlias, luaArgs)
 
-            // Check if the result is a LuaTable and convert it to a MutableList
             if (result.istable()) {
-                return result.checktable().keys().map { it.tojstring() }.toMutableList()
+                val suggestions = mutableListOf<String>()
+                for (i in 1..result.length()) {
+                    suggestions.add(result.get(i).tojstring())
+                }
+                return suggestions
             }
         }
 
         // Default behavior: Return online player names
         return Bukkit.getOnlinePlayers().map { player -> player.name }.toMutableList()
     }
+
+
 
 }
