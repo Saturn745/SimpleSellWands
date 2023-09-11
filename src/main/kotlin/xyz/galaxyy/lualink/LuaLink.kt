@@ -1,4 +1,4 @@
-package xyz.galaxyy.mclua
+package xyz.galaxyy.lualink
 
 import cloud.commandframework.annotations.*
 import cloud.commandframework.arguments.parser.ParserParameters
@@ -18,24 +18,24 @@ import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import org.luaj.vm2.lib.jse.CoerceJavaToLua
 import org.luaj.vm2.lib.jse.JsePlatform
-import xyz.galaxyy.mclua.commands.AvailableScriptParser
-import xyz.galaxyy.mclua.commands.LoadedScriptParser
-import xyz.galaxyy.mclua.commands.MCLuaCommand
+import xyz.galaxyy.lualink.commands.AvailableScriptParser
+import xyz.galaxyy.lualink.commands.LoadedScriptParser
+import xyz.galaxyy.lualink.commands.MCLuaCommand
 import java.util.function.Function
-import xyz.galaxyy.mclua.lua.LuaScript
-import xyz.galaxyy.mclua.lua.LuaUtils
-import xyz.galaxyy.mclua.lua.misc.PrintOverride
-import xyz.galaxyy.mclua.lua.wrappers.LuaEnumWrapper
-import xyz.galaxyy.mclua.lua.wrappers.LuaPluginWrapper
+import xyz.galaxyy.lualink.lua.LuaScript
+import xyz.galaxyy.lualink.lua.LuaUtils
+import xyz.galaxyy.lualink.lua.misc.PrintOverride
+import xyz.galaxyy.lualink.lua.wrappers.LuaEnumWrapper
+import xyz.galaxyy.lualink.lua.wrappers.LuaPluginWrapper
 import java.io.File
 
-class MCLua : JavaPlugin() {
+class LuaLink : JavaPlugin() {
     val loadedScripts: MutableList<LuaScript> = mutableListOf()
     lateinit var manager: PaperCommandManager<CommandSender>
     lateinit var annotationParser: AnnotationParser<CommandSender>
     companion object {
-        private lateinit var instance: MCLua
-        fun getInstance(): MCLua {
+        private lateinit var instance: LuaLink
+        fun getInstance(): LuaLink {
             return instance
         }
     }
@@ -176,6 +176,9 @@ class MCLua : JavaPlugin() {
 
         File(this.dataFolder.path+"/scripts").walk().forEach { file ->
             if (file.extension == "lua") {
+                if (file.name.startsWith(".")) {
+                    return@forEach
+                }
                 this.loadScript(file)
             } else {
                 if (file.name != "scripts") {

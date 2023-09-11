@@ -1,4 +1,4 @@
-package xyz.galaxyy.mclua.lua
+package xyz.galaxyy.lualink.lua
 
 import com.github.only52607.luakt.CoerceKotlinToLua
 import org.bukkit.Bukkit
@@ -6,7 +6,7 @@ import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
 import org.luaj.vm2.lib.VarArgFunction
-import xyz.galaxyy.mclua.MCLua
+import xyz.galaxyy.lualink.LuaLink
 
 class LuaUtils : LuaTable() {
     init {
@@ -42,7 +42,7 @@ class LuaUtils : LuaTable() {
 
                 val callback = args.arg(2).checkfunction()
 
-                val task = Bukkit.getScheduler().runTask(MCLua.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTask(LuaLink.getInstance(), Runnable {
                     callback.call()
                 })
 
@@ -58,7 +58,7 @@ class LuaUtils : LuaTable() {
 
                 val callback = args.arg(1).checkfunction()
 
-                val task = Bukkit.getScheduler().runTaskAsynchronously(MCLua.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTaskAsynchronously(LuaLink.getInstance(), Runnable {
                     callback.call()
                 })
 
@@ -75,7 +75,7 @@ class LuaUtils : LuaTable() {
                 val callback = args.arg(1).checkfunction()
                 val delay = args.arg(2).checkint()
 
-                val task = Bukkit.getScheduler().scheduleSyncDelayedTask(MCLua.getInstance(), {
+                val task = Bukkit.getScheduler().scheduleSyncDelayedTask(LuaLink.getInstance(), {
                     callback.call()
                 }, delay.toLong())
 
@@ -93,7 +93,7 @@ class LuaUtils : LuaTable() {
                 val delay = args.arg(2).checkint()
                 val period = args.arg(3).checkint()
 
-                val task = Bukkit.getScheduler().scheduleSyncRepeatingTask(MCLua.getInstance(), {
+                val task = Bukkit.getScheduler().scheduleSyncRepeatingTask(LuaLink.getInstance(), {
                     callback.call()
                 }, delay.toLong(), period.toLong())
 
@@ -110,7 +110,7 @@ class LuaUtils : LuaTable() {
                 val callback = args.arg(1).checkfunction()
                 val delay = args.arg(2).checkint()
 
-                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(MCLua.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(LuaLink.getInstance(), Runnable {
                     callback.call()
                 }, delay.toLong())
 
@@ -126,7 +126,7 @@ class LuaUtils : LuaTable() {
 
                 val callback = args.arg(1).checkfunction()
 
-                val task = Bukkit.getScheduler().runTaskAsynchronously(MCLua.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTaskAsynchronously(LuaLink.getInstance(), Runnable {
                     callback.call()
                 })
 
@@ -143,7 +143,7 @@ class LuaUtils : LuaTable() {
                 val callback = args.arg(1).checkfunction()
                 val delay = args.arg(2).checkint()
 
-                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(MCLua.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(LuaLink.getInstance(), Runnable {
                     callback.call()
                 }, delay.toLong())
 

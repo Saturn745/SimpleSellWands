@@ -1,3 +1,3 @@
 
-rootProject.name = "MCLua"
+rootProject.name = "LuaLink"
 

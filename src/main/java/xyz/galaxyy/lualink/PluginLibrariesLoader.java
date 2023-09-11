@@ -1,4 +1,4 @@
-package xyz.galaxyy.mclua;
+package xyz.galaxyy.lualink;
 
 import com.google.gson.Gson;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;

@@ -1,17 +1,16 @@
-# MCLua Plugin
+# LuaLink Plugin
 
-MCLua is an experimental plugin that provides a basic Lua scripting runtime for Paper-based Minecraft servers. It is designed for small and simple tasks and serves as an alternative to Skript.
+LuaLink is an experimental plugin that provides a basic Lua scripting runtime for Paper-based Minecraft servers. It is designed for small and simple tasks and serves as an alternative to Skript.
 
 ## Requirements
 
-To use the MCLua plugin, you need the following:
+To use the LuaLink plugin, you need the following:
 
 - A [Paper](https://papermc.io/) based Minecraft server.
 - A basic understanding of Lua scripting.
 
 **Note**: Detailed documentation is coming soon.
 
-## **This plugin is very experimental and is not recommended for production use.**
 
 <details>
 <summary>Examples</summary>
@@ -26,7 +25,7 @@ plugin.registerSimpleCommand(function(sender, args)
     sender:sendRichMessage("<green>Hello, "..sender:getName())
 end, {
     name = "hello",
-    description = "Hello world from MCLua"
+    description = "Hello world from LuaLink"
 })
 
 plugin.registerSimpleCommand(function(sender, args)
@@ -75,11 +74,9 @@ local function bringCommand(sender, args)
     end
 end
 
-function startsWith(str, start)
+local function startsWith(str, start)
     return str:sub(1, #start) == start
 end
-
-
 
 local function bringTabComplete(sender, alias, args)
     if #args == 1 then
@@ -127,7 +124,7 @@ local function listen()
 end
 
 plugin.onEnable(function()
-    plugin.logger.info("Welcomer loaded! PS: You don't have to do this in every script, MCLua will do it for you.")
+    plugin.logger.info("Welcomer loaded! PS: You don't have to do this in every script, LuaLink already logs when a script is loaded.")
     listen()
 end)
 ```

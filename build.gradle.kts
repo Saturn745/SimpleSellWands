@@ -8,7 +8,7 @@ plugins {
     application
 }
 val buildNum = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
-group = "xyz.galaxyy.mclua"
+group = "xyz.galaxyy.lualink"
 version = "1.20.1-$buildNum"
 
 repositories {
@@ -34,25 +34,23 @@ dependencies {
 }
 
 paper {
-    // Plugin main class (required)
-    loader = "xyz.galaxyy.mclua.PluginLibrariesLoader"
-    main = "xyz.galaxyy.mclua.MCLua"
-    name = "MCLua"
+    loader = "xyz.galaxyy.lualink.PluginLibrariesLoader"
+    main = "xyz.galaxyy.lualink.LuaLink"
+    name = "LuaLink"
     authors = listOf("Element4521")
     description = "A plugin that allows you to run Lua scripts in Minecraft."
     apiVersion = "1.20"
 
     load = BukkitPluginDescription.PluginLoadOrder.STARTUP
 
-    // Generate paper-libraries.json from `library` and `paperLibrary` in `dependencies`
     generateLibrariesJson = true
 }
 
 modrinth {
-    token.set(System.getenv("MODRINTH_TOKEN")) // Remember to have the MODRINTH_TOKEN environment variable set or else this will fail - just make sure it stays private!
-    projectId.set("mclua") // This can be the project ID or the slug. Either will work!
-    versionNumber.set(version.toString()) // You don't need to set this manually. Will fail if Modrinth has this version already
-    versionType.set("beta") // This is the default -- can also be `beta` or `alpha`
+    token.set(System.getenv("MODRINTH_TOKEN"))
+    projectId.set("lualink")
+    versionNumber.set(version.toString())
+    versionType.set("beta")
     uploadFile.set(tasks.jar.get())
     gameVersions.addAll("1.20.1")
     loaders.addAll("paper", "purpur")

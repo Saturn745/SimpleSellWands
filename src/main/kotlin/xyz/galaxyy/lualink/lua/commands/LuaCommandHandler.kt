@@ -1,4 +1,4 @@
-package xyz.galaxyy.mclua.lua.commands
+package xyz.galaxyy.lualink.lua.commands
 
 import com.github.only52607.luakt.CoerceKotlinToLua
 import org.bukkit.Bukkit
@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
-import xyz.galaxyy.mclua.MCLua
+import xyz.galaxyy.lualink.LuaLink
 
 
 class LuaCommandHandler(private val callback: LuaFunction, private val metadata: LuaTable) : Command(metadata.get("name").tojstring()) {
@@ -36,7 +36,7 @@ class LuaCommandHandler(private val callback: LuaFunction, private val metadata:
         }
 
         if (this.metadata.get("runAsync").toboolean()) {
-            Bukkit.getScheduler().runTaskAsynchronously(MCLua.getInstance(), Runnable {
+            Bukkit.getScheduler().runTaskAsynchronously(LuaLink.getInstance(), Runnable {
                 callback.invoke(CoerceKotlinToLua.coerce(sender), CoerceKotlinToLua.coerce(args))
             })
         } else {

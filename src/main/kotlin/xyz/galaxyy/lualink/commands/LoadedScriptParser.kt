@@ -1,12 +1,11 @@
-package xyz.galaxyy.mclua.commands
+package xyz.galaxyy.lualink.commands
 
 import cloud.commandframework.arguments.parser.ArgumentParseResult
 import cloud.commandframework.arguments.parser.ArgumentParser
 import cloud.commandframework.context.CommandContext
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException
-import org.checkerframework.checker.units.qual.C
-import xyz.galaxyy.mclua.MCLua
-import xyz.galaxyy.mclua.lua.LuaScript
+import xyz.galaxyy.lualink.LuaLink
+import xyz.galaxyy.lualink.lua.LuaScript
 import java.util.*
 
 class LoadedScriptParser<C: Any>  : ArgumentParser<C, LuaScript> {
@@ -14,7 +13,7 @@ class LoadedScriptParser<C: Any>  : ArgumentParser<C, LuaScript> {
         val input = inputQueue.peek()
             ?: return ArgumentParseResult.failure(NoInputProvidedException(LoadedScriptParser::class.java, commandContext))
         var script: LuaScript? = null
-        MCLua.getInstance().loadedScripts.forEach { loadedScript ->
+        LuaLink.getInstance().loadedScripts.forEach { loadedScript ->
             if (loadedScript.file.name == input) {
                 script = loadedScript
             }
@@ -30,7 +29,7 @@ class LoadedScriptParser<C: Any>  : ArgumentParser<C, LuaScript> {
 
     override fun suggestions(commandContext: CommandContext<C>, input: String): MutableList<String> {
         val suggestions = mutableListOf<String>()
-        MCLua.getInstance().loadedScripts.forEach { loadedScript ->
+        LuaLink.getInstance().loadedScripts.forEach { loadedScript ->
             if (loadedScript.file.startsWith(input)) {
                 suggestions.add(loadedScript.file.name)
             }

@@ -1,4 +1,4 @@
-package xyz.galaxyy.mclua.commands
+package xyz.galaxyy.lualink.commands
 
 import cloud.commandframework.captions.Caption
 import cloud.commandframework.context.CommandContext
