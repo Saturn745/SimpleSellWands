@@ -1,6 +1,6 @@
 package xyz.galaxyy.lualink
 
-import cloud.commandframework.annotations.*
+import cloud.commandframework.annotations.AnnotationParser
 import cloud.commandframework.arguments.parser.ParserParameters
 import cloud.commandframework.arguments.parser.StandardParameters
 import cloud.commandframework.bukkit.CloudBukkitCapabilities
@@ -8,7 +8,6 @@ import cloud.commandframework.execution.CommandExecutionCoordinator
 import cloud.commandframework.execution.FilteringCommandSuggestionProcessor
 import cloud.commandframework.meta.CommandMeta
 import cloud.commandframework.paper.PaperCommandManager
-import com.github.only52607.luakt.CoerceKotlinToLua
 import com.github.only52607.luakt.lib.LuaKotlinExLib
 import com.github.only52607.luakt.lib.LuaKotlinLib
 import io.leangen.geantyref.TypeToken
@@ -17,18 +16,18 @@ import org.bukkit.command.CommandSender
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import org.luaj.vm2.LuaError
-import org.luaj.vm2.lib.jse.CoerceJavaToLua
 import org.luaj.vm2.lib.jse.JsePlatform
 import xyz.galaxyy.lualink.commands.AvailableScriptParser
 import xyz.galaxyy.lualink.commands.LoadedScriptParser
 import xyz.galaxyy.lualink.commands.LuaLinkCommands
-import java.util.function.Function
+import xyz.galaxyy.lualink.lua.LuaImport
 import xyz.galaxyy.lualink.lua.LuaScript
 import xyz.galaxyy.lualink.lua.LuaUtils
 import xyz.galaxyy.lualink.lua.misc.PrintOverride
 import xyz.galaxyy.lualink.lua.wrappers.LuaEnumWrapper
 import xyz.galaxyy.lualink.lua.wrappers.LuaPluginWrapper
 import java.io.File
+import java.util.function.Function
 
 class LuaLink : JavaPlugin() {
     val loadedScripts: MutableList<LuaScript> = mutableListOf()
@@ -139,10 +138,11 @@ class LuaLink : JavaPlugin() {
         val script = LuaScript(file, globals, pluginWrapper)
         globals.load(LuaKotlinLib())
         globals.load(LuaKotlinExLib())
-        globals.set("plugin", CoerceKotlinToLua.coerce(pluginWrapper))
-        globals.set("print", CoerceJavaToLua.coerce(PrintOverride()))
-        globals.set("utils", CoerceKotlinToLua.coerce(LuaUtils()))
-        globals.set("enums", CoerceKotlinToLua.coerce(LuaEnumWrapper()))
+        globals.set("plugin", pluginWrapper)
+        globals.set("print", PrintOverride())
+        globals.set("utils", LuaUtils())
+        globals.set("enums", LuaEnumWrapper())
+        globals.set("import", LuaImport())
         this.logger.info("Loading script ${file.name}")
         try {
             globals.loadfile(file.path).call()
