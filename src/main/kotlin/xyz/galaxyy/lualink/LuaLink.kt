@@ -16,11 +16,12 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
+import org.luaj.vm2.LuaError
 import org.luaj.vm2.lib.jse.CoerceJavaToLua
 import org.luaj.vm2.lib.jse.JsePlatform
 import xyz.galaxyy.lualink.commands.AvailableScriptParser
 import xyz.galaxyy.lualink.commands.LoadedScriptParser
-import xyz.galaxyy.lualink.commands.MCLuaCommand
+import xyz.galaxyy.lualink.commands.LuaLinkCommands
 import java.util.function.Function
 import xyz.galaxyy.lualink.lua.LuaScript
 import xyz.galaxyy.lualink.lua.LuaUtils
@@ -43,11 +44,6 @@ class LuaLink : JavaPlugin() {
     override fun onLoad() {
         instance = this
         this.loadScripts()
-        this.loadedScripts.forEach { script ->
-            if (script.pluginWrapper.onLoadCB?.isfunction() == true) {
-                script.pluginWrapper.onLoadCB?.call()
-            }
-        }
     }
 
     override fun onEnable() {
@@ -55,7 +51,13 @@ class LuaLink : JavaPlugin() {
         this.registerCommands()
         this.loadedScripts.forEach { script ->
             if (script.pluginWrapper.onEnableCB?.isfunction() == true) {
-                script.pluginWrapper.onEnableCB?.call()
+                try {
+                    script.pluginWrapper.onEnableCB?.call()
+                } catch (e: LuaError) {
+                    this.logger.severe("LuaLink encountered an error while called onEnable for ${script.file.name}: ${e.message}")
+                    e.printStackTrace()
+                    return
+                }
             }
         }
     }
@@ -68,7 +70,7 @@ class LuaLink : JavaPlugin() {
         }
     }
     private fun registerCommands() {
-        this.annotationParser.parse(MCLuaCommand())
+        this.annotationParser.parse(LuaLinkCommands())
     }
     private fun setupCloud() {
 
@@ -142,11 +144,30 @@ class LuaLink : JavaPlugin() {
         globals.set("utils", CoerceKotlinToLua.coerce(LuaUtils()))
         globals.set("enums", CoerceKotlinToLua.coerce(LuaEnumWrapper()))
         this.logger.info("Loading script ${file.name}")
-        globals.loadfile(file.path).call()
+        try {
+            globals.loadfile(file.path).call()
+        } catch (e: LuaError) {
+            this.logger.severe("LuaLink encountered an error while loading ${file.name}: ${e.message}")
+            return
+        }
         loadedScripts.add(script)
+        if (script.pluginWrapper.onLoadCB?.isfunction() == true) {
+            try {
+                script.pluginWrapper.onLoadCB?.call()
+            } catch (e: LuaError) {
+                this.logger.severe("LuaLink encountered an error while called onLoad for ${file.name}: ${e.message}")
+                return
+            }
+        }
         Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
-        if (this.isEnabled)
-            script.pluginWrapper.onEnableCB?.call()
+        if (this.isEnabled) {
+            try {
+                script.pluginWrapper.onEnableCB?.call()
+            } catch (e: LuaError) {
+                this.logger.severe("LuaLink encountered an error while called onEnable for ${file.name}: ${e.message}")
+                return
+            }
+        }
         this.logger.info("Loaded script ${file.name}")
     }
 
@@ -163,7 +184,12 @@ class LuaLink : JavaPlugin() {
             Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
         }
         if (script.pluginWrapper.onDisableCB?.isfunction() == true) {
-            script.pluginWrapper.onDisableCB?.call()
+            try {
+                script.pluginWrapper.onDisableCB?.call()
+            } catch (e: LuaError) {
+                this.logger.severe("LuaLink encountered an error while called onDisable for ${script.file.name}: ${e.message}")
+                return
+            }
         }
         this.loadedScripts.remove(script)
     }

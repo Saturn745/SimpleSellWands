@@ -5,6 +5,7 @@ import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaFunction
 import org.luaj.vm2.LuaTable
 import org.luaj.vm2.LuaValue
@@ -37,10 +38,18 @@ class LuaCommandHandler(private val callback: LuaFunction, private val metadata:
 
         if (this.metadata.get("runAsync").toboolean()) {
             Bukkit.getScheduler().runTaskAsynchronously(LuaLink.getInstance(), Runnable {
-                callback.invoke(CoerceKotlinToLua.coerce(sender), CoerceKotlinToLua.coerce(args))
+                try {
+                    callback.invoke(CoerceKotlinToLua.coerce(sender), CoerceKotlinToLua.coerce(args))
+                } catch (e: LuaError) {
+                    sender.sendRichMessage("<red>LuaLink encountered an error while executing this command. ${e.message}")
+                }
             })
         } else {
-            callback.invoke(CoerceKotlinToLua.coerce(sender), CoerceKotlinToLua.coerce(args))
+            try {
+                callback.invoke(CoerceKotlinToLua.coerce(sender), CoerceKotlinToLua.coerce(args))
+            } catch (e: LuaError) {
+                sender.sendRichMessage("<red>LuaLink encountered an error while executing this command. ${e.message}")
+            }
         }
         return true
     }

@@ -10,10 +10,10 @@ import xyz.galaxyy.lualink.LuaLink
 import xyz.galaxyy.lualink.lua.LuaScript
 import java.io.File
 
-class MCLuaCommand {
+class LuaLinkCommands {
     @CommandDescription("Reload a Lua script")
-    @CommandMethod("mclua reload <script>")
-    @CommandPermission("mclua.scripts.reload")
+    @CommandMethod("lualink reload <script>")
+    @CommandPermission("lualink.scripts.reload")
     fun reloadScript(sender: CommandSender, @Argument("script") script: LuaScript) {
         val fileName = script.file.name
         LuaLink.getInstance().unLoadScript(script)
@@ -22,24 +22,24 @@ class MCLuaCommand {
     }
 
     @CommandDescription("Unload a Lua script")
-    @CommandMethod("mclua unload <script>")
-    @CommandPermission("mclua.scripts.unload")
+    @CommandMethod("lualink unload <script>")
+    @CommandPermission("lualink.scripts.unload")
     fun unloadScript(sender: CommandSender, @Argument("script") script: LuaScript) {
         LuaLink.getInstance().unLoadScript(script)
         sender.sendRichMessage("<green>Unloaded script <yellow>${script.file}<green>.")
     }
 
     @CommandDescription("Load a Lua script")
-    @CommandMethod("mclua load <script>")
-    @CommandPermission("mclua.scripts.load")
+    @CommandMethod("lualink load <script>")
+    @CommandPermission("lualink.scripts.load")
     fun loadScript(sender: CommandSender, @Argument("script") script: File) {
         LuaLink.getInstance().loadScript(script)
         sender.sendRichMessage("<green>Loaded script <yellow>${script.name}<green>.")
     }
 
     @CommandDescription("Run Lua code")
-    @CommandMethod("mclua run <code>")
-    @CommandPermission("mclua.scripts.run")
+    @CommandMethod("lualink run <code>")
+    @CommandPermission("lualink.scripts.run")
     fun runCode(sender: CommandSender, @Argument("code") @Greedy code: String) {
         // TODO: Run code
     }
