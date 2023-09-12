@@ -8,7 +8,7 @@ import org.luaj.vm2.Varargs
 import org.luaj.vm2.lib.VarArgFunction
 import xyz.galaxyy.lualink.LuaLink
 
-class LuaUtils : LuaTable() {
+class LuaUtils(private val plugin: LuaLink) : LuaTable() {
     init {
         this.set("instanceOf", object: VarArgFunction() {
             override fun invoke(args: Varargs?): Varargs {
@@ -42,7 +42,7 @@ class LuaUtils : LuaTable() {
 
                 val callback = args.arg(2).checkfunction()
 
-                val task = Bukkit.getScheduler().runTask(LuaLink.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTask(plugin, Runnable {
                     callback.call()
                 })
 
@@ -58,7 +58,7 @@ class LuaUtils : LuaTable() {
 
                 val callback = args.arg(1).checkfunction()
 
-                val task = Bukkit.getScheduler().runTaskAsynchronously(LuaLink.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
                     callback.call()
                 })
 
@@ -75,7 +75,7 @@ class LuaUtils : LuaTable() {
                 val callback = args.arg(1).checkfunction()
                 val delay = args.arg(2).checkint()
 
-                val task = Bukkit.getScheduler().scheduleSyncDelayedTask(LuaLink.getInstance(), {
+                val task = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, {
                     callback.call()
                 }, delay.toLong())
 
@@ -93,7 +93,7 @@ class LuaUtils : LuaTable() {
                 val delay = args.arg(2).checkint()
                 val period = args.arg(3).checkint()
 
-                val task = Bukkit.getScheduler().scheduleSyncRepeatingTask(LuaLink.getInstance(), {
+                val task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, {
                     callback.call()
                 }, delay.toLong(), period.toLong())
 
@@ -110,7 +110,7 @@ class LuaUtils : LuaTable() {
                 val callback = args.arg(1).checkfunction()
                 val delay = args.arg(2).checkint()
 
-                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(LuaLink.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, Runnable {
                     callback.call()
                 }, delay.toLong())
 
@@ -126,7 +126,7 @@ class LuaUtils : LuaTable() {
 
                 val callback = args.arg(1).checkfunction()
 
-                val task = Bukkit.getScheduler().runTaskAsynchronously(LuaLink.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
                     callback.call()
                 })
 
@@ -143,7 +143,7 @@ class LuaUtils : LuaTable() {
                 val callback = args.arg(1).checkfunction()
                 val delay = args.arg(2).checkint()
 
-                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(LuaLink.getInstance(), Runnable {
+                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, Runnable {
                     callback.call()
                 }, delay.toLong())
 

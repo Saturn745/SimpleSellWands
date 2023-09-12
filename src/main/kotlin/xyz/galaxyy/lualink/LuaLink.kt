@@ -33,15 +33,8 @@ class LuaLink : JavaPlugin() {
     val loadedScripts: MutableList<LuaScript> = mutableListOf()
     lateinit var manager: PaperCommandManager<CommandSender>
     lateinit var annotationParser: AnnotationParser<CommandSender>
-    companion object {
-        private lateinit var instance: LuaLink
-        fun getInstance(): LuaLink {
-            return instance
-        }
-    }
 
     override fun onLoad() {
-        instance = this
         this.loadScripts()
     }
 
@@ -69,7 +62,7 @@ class LuaLink : JavaPlugin() {
         }
     }
     private fun registerCommands() {
-        this.annotationParser.parse(LuaLinkCommands())
+        this.annotationParser.parse(LuaLinkCommands(this))
     }
     private fun setupCloud() {
 
@@ -122,11 +115,11 @@ class LuaLink : JavaPlugin() {
 
         this.manager.parserRegistry().registerParserSupplier(
             TypeToken.get(LuaScript::class.java)
-        ) { LoadedScriptParser() }
+        ) { LoadedScriptParser(this) }
 
         this.manager.parserRegistry().registerParserSupplier(
             TypeToken.get(File::class.java)
-        ) { AvailableScriptParser() }
+        ) { AvailableScriptParser(this) }
 
     }
 
@@ -134,13 +127,13 @@ class LuaLink : JavaPlugin() {
     // Should probably move this to a ScriptManager class
     fun loadScript(file: File) {
         val globals = JsePlatform.standardGlobals()
-        val pluginWrapper = LuaPluginWrapper()
+        val pluginWrapper = LuaPluginWrapper(this)
         val script = LuaScript(file, globals, pluginWrapper)
         globals.load(LuaKotlinLib())
         globals.load(LuaKotlinExLib())
         globals.set("plugin", pluginWrapper)
-        globals.set("print", PrintOverride())
-        globals.set("utils", LuaUtils())
+        globals.set("print", PrintOverride(this))
+        globals.set("utils", LuaUtils(this))
         globals.set("enums", LuaEnumWrapper())
         globals.set("import", LuaImport())
         this.logger.info("Loading script ${file.name}")

@@ -4,9 +4,9 @@ import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.OneArgFunction
 import xyz.galaxyy.lualink.LuaLink
 
-class PrintOverride : OneArgFunction() {
+class PrintOverride(private val plugin: LuaLink) : OneArgFunction() {
     override fun call(arg: LuaValue): LuaValue? {
-        LuaLink.getInstance().logger.info(arg.tojstring())
+        this.plugin.logger.info(arg.tojstring())
         return LuaValue.NIL
     }
 }

@@ -8,12 +8,12 @@ import xyz.galaxyy.lualink.LuaLink
 import xyz.galaxyy.lualink.lua.LuaScript
 import java.util.*
 
-class LoadedScriptParser<C: Any>  : ArgumentParser<C, LuaScript> {
+class LoadedScriptParser<C: Any>(private val plugin: LuaLink)  : ArgumentParser<C, LuaScript> {
     override fun parse(commandContext: CommandContext<C>, inputQueue: Queue<String>): ArgumentParseResult<LuaScript> {
         val input = inputQueue.peek()
             ?: return ArgumentParseResult.failure(NoInputProvidedException(LoadedScriptParser::class.java, commandContext))
         var script: LuaScript? = null
-        LuaLink.getInstance().loadedScripts.forEach { loadedScript ->
+        this.plugin.loadedScripts.forEach { loadedScript ->
             if (loadedScript.file.name == input) {
                 script = loadedScript
             }
@@ -29,7 +29,7 @@ class LoadedScriptParser<C: Any>  : ArgumentParser<C, LuaScript> {
 
     override fun suggestions(commandContext: CommandContext<C>, input: String): MutableList<String> {
         val suggestions = mutableListOf<String>()
-        LuaLink.getInstance().loadedScripts.forEach { loadedScript ->
+        this.plugin.loadedScripts.forEach { loadedScript ->
             if (loadedScript.file.startsWith(input)) {
                 suggestions.add(loadedScript.file.name)
             }

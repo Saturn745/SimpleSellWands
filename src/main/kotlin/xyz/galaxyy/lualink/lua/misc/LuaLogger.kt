@@ -5,25 +5,25 @@ import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.OneArgFunction
 import xyz.galaxyy.lualink.LuaLink
 
-class LuaLogger : LuaTable() {
+class LuaLogger(private val plugin: LuaLink) : LuaTable() {
     init {
         this.set("info", object : OneArgFunction() {
             override fun call(arg: LuaValue): LuaValue? {
-                LuaLink.getInstance().logger.info(arg.tojstring())
+                plugin.logger.info(arg.tojstring())
                 return LuaValue.NIL
             }
         })
 
         this.set("warning", object : OneArgFunction() {
             override fun call(arg: LuaValue): LuaValue? {
-                LuaLink.getInstance().logger.warning(arg.tojstring())
+                plugin.logger.warning(arg.tojstring())
                 return LuaValue.NIL
             }
         })
 
         this.set("severe", object : OneArgFunction() {
             override fun call(arg: LuaValue): LuaValue? {
-                LuaLink.getInstance().logger.severe(arg.tojstring())
+                plugin.logger.severe(arg.tojstring())
                 return LuaValue.NIL
             }
         })

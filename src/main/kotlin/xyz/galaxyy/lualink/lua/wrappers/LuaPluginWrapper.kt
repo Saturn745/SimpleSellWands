@@ -13,7 +13,7 @@ import xyz.galaxyy.lualink.lua.commands.LuaCommandHandler
 import xyz.galaxyy.lualink.lua.misc.LuaLogger
 
 
-class LuaPluginWrapper : LuaTable() {
+class LuaPluginWrapper(private val plugin: LuaLink) : LuaTable() {
     var onLoadCB: LuaValue? = null
         private set
 
@@ -89,7 +89,7 @@ class LuaPluginWrapper : LuaTable() {
             }
         })
 
-        this.set("logger", CoerceKotlinToLua.coerce(LuaLogger()))
+        this.set("logger", CoerceKotlinToLua.coerce(LuaLogger(this.plugin)))
         this.set("getServer", object: ZeroArgFunction() {
             override fun call(): LuaValue {
                 return CoerceKotlinToLua.coerce(Bukkit.getServer())
@@ -98,11 +98,11 @@ class LuaPluginWrapper : LuaTable() {
     }
 
     private fun registerCommand(callback: LuaFunction, metadata: LuaTable) {
-        val command: LuaCommandHandler = LuaCommandHandler(callback, metadata)
+        val command: LuaCommandHandler = LuaCommandHandler(this.plugin, callback, metadata)
 
         this.commands.add(command)
 
-        LuaLink.getInstance().server.commandMap.register("mclua", command)
+        this.plugin.server.commandMap.register("lualinkscript", command)
     }
     private fun registerListener(event: String, callback: LuaFunction) {
         try {
@@ -112,9 +112,9 @@ class LuaPluginWrapper : LuaTable() {
             }
             val listener = object : Listener {}
 
-            LuaLink.getInstance().server.pluginManager.registerEvent(eventClass as Class<out org.bukkit.event.Event>, listener, EventPriority.NORMAL, { _, event ->
+            this.plugin.server.pluginManager.registerEvent(eventClass as Class<out org.bukkit.event.Event>, listener, EventPriority.NORMAL, { _, event ->
                 callback.invoke(CoerceKotlinToLua.coerce(event))
-            }, LuaLink.getInstance())
+            }, this.plugin)
 
             this.listeners.add(listener)
 

@@ -10,14 +10,14 @@ import xyz.galaxyy.lualink.LuaLink
 import xyz.galaxyy.lualink.lua.LuaScript
 import java.io.File
 
-class LuaLinkCommands {
+class LuaLinkCommands(private val plugin: LuaLink) {
     @CommandDescription("Reload a Lua script")
     @CommandMethod("lualink reload <script>")
     @CommandPermission("lualink.scripts.reload")
     fun reloadScript(sender: CommandSender, @Argument("script") script: LuaScript) {
         val fileName = script.file.name
-        LuaLink.getInstance().unLoadScript(script)
-        LuaLink.getInstance().loadScript(File(LuaLink.getInstance().dataFolder, "scripts/$fileName"))
+        this.plugin.unLoadScript(script)
+        this.plugin.loadScript(File(this.plugin.dataFolder, "scripts/$fileName"))
         sender.sendRichMessage("<green>Reloaded script <yellow>$fileName<green>.")
     }
 
@@ -25,7 +25,7 @@ class LuaLinkCommands {
     @CommandMethod("lualink unload <script>")
     @CommandPermission("lualink.scripts.unload")
     fun unloadScript(sender: CommandSender, @Argument("script") script: LuaScript) {
-        LuaLink.getInstance().unLoadScript(script)
+        this.plugin.unLoadScript(script)
         sender.sendRichMessage("<green>Unloaded script <yellow>${script.file}<green>.")
     }
 
@@ -33,7 +33,7 @@ class LuaLinkCommands {
     @CommandMethod("lualink load <script>")
     @CommandPermission("lualink.scripts.load")
     fun loadScript(sender: CommandSender, @Argument("script") script: File) {
-        LuaLink.getInstance().loadScript(script)
+        this.plugin.loadScript(script)
         sender.sendRichMessage("<green>Loaded script <yellow>${script.name}<green>.")
     }
 

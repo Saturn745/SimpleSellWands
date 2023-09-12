@@ -12,7 +12,7 @@ import org.luaj.vm2.LuaValue
 import xyz.galaxyy.lualink.LuaLink
 
 
-class LuaCommandHandler(private val callback: LuaFunction, private val metadata: LuaTable) : Command(metadata.get("name").tojstring()) {
+class LuaCommandHandler(private val plugin: LuaLink, private val callback: LuaFunction, private val metadata: LuaTable) : Command(metadata.get("name").tojstring()) {
     init {
         if (!this.metadata.get("description").isnil())
             this.description = this.metadata.get("description").tojstring()
@@ -37,7 +37,7 @@ class LuaCommandHandler(private val callback: LuaFunction, private val metadata:
         }
 
         if (this.metadata.get("runAsync").toboolean()) {
-            Bukkit.getScheduler().runTaskAsynchronously(LuaLink.getInstance(), Runnable {
+            Bukkit.getScheduler().runTaskAsynchronously(this.plugin, Runnable {
                 try {
                     callback.invoke(CoerceKotlinToLua.coerce(sender), CoerceKotlinToLua.coerce(args))
                 } catch (e: LuaError) {

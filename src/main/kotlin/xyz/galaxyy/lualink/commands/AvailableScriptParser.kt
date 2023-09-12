@@ -8,14 +8,14 @@ import xyz.galaxyy.lualink.LuaLink
 import java.io.File
 import java.util.*
 
-class AvailableScriptParser<C: Any>  : ArgumentParser<C, File> {
+class AvailableScriptParser<C: Any>(private val plugin: LuaLink)  : ArgumentParser<C, File> {
     override fun parse(commandContext: CommandContext<C>, inputQueue: Queue<String>): ArgumentParseResult<File> {
         val input = inputQueue.peek()
             ?: return ArgumentParseResult.failure(NoInputProvidedException(AvailableScriptParser::class.java, commandContext))
         // If the script is not loaded, and the file exists in datafolder+/scripts then return the file for loading.
-        val file = File(LuaLink.getInstance().dataFolder, "scripts/$input")
+        val file = File(this.plugin.dataFolder, "scripts/$input")
         return if (file.exists()) {
-            val loadedScripts = LuaLink.getInstance().loadedScripts
+            val loadedScripts = this.plugin.loadedScripts
             val isAlreadyLoaded = loadedScripts.any { it.file == file }
 
             if (!isAlreadyLoaded) {
@@ -33,7 +33,7 @@ class AvailableScriptParser<C: Any>  : ArgumentParser<C, File> {
 
     override fun suggestions(commandContext: CommandContext<C>, input: String): MutableList<String> {
         val suggestions = mutableListOf<String>()
-        val scriptsFolder = File(LuaLink.getInstance().dataFolder, "scripts")
+        val scriptsFolder = File(this.plugin.dataFolder, "scripts")
         scriptsFolder.listFiles()?.forEach { file ->
             if (file.name.startsWith(input)) {
                 suggestions.add(file.name)
