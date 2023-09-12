@@ -7,7 +7,7 @@ import cloud.commandframework.annotations.CommandPermission
 import cloud.commandframework.annotations.specifier.Greedy
 import org.bukkit.command.CommandSender
 import xyz.galaxyy.lualink.LuaLink
-import xyz.galaxyy.lualink.lua.LuaScript
+import xyz.galaxyy.lualink.lua.wrappers.LuaScript
 import java.io.File
 
 class LuaLinkCommands(private val plugin: LuaLink) {

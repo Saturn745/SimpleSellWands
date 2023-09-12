@@ -11,9 +11,10 @@ import org.luaj.vm2.lib.ZeroArgFunction
 import xyz.galaxyy.lualink.LuaLink
 import xyz.galaxyy.lualink.lua.commands.LuaCommandHandler
 import xyz.galaxyy.lualink.lua.misc.LuaLogger
+import java.io.File
 
 
-class LuaPluginWrapper(private val plugin: LuaLink) : LuaTable() {
+class LuaScript(private val plugin: LuaLink, val file: File, val globals: Globals) : LuaTable() {
     var onLoadCB: LuaValue? = null
         private set
 
@@ -69,7 +70,7 @@ class LuaPluginWrapper(private val plugin: LuaLink) : LuaTable() {
                 val callback: LuaFunction = args.checkfunction(1)
                 val metadata: LuaTable = args.checktable(2)
 
-                this@LuaPluginWrapper.registerCommand(callback, metadata)
+                this@LuaScript.registerCommand(callback, metadata)
                 return LuaValue.NIL
             }
         })
@@ -83,7 +84,7 @@ class LuaPluginWrapper(private val plugin: LuaLink) : LuaTable() {
                     throw IllegalArgumentException("hook expects 2 arguments: string, function")
                 }
 
-                this@LuaPluginWrapper.registerListener(eventName, callback)
+                this@LuaScript.registerListener(eventName, callback)
 
                 return LuaValue.NIL
             }

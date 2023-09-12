@@ -20,12 +20,12 @@ import org.luaj.vm2.lib.jse.JsePlatform
 import xyz.galaxyy.lualink.commands.AvailableScriptParser
 import xyz.galaxyy.lualink.commands.LoadedScriptParser
 import xyz.galaxyy.lualink.commands.LuaLinkCommands
+import xyz.galaxyy.lualink.lua.LuaAddons
 import xyz.galaxyy.lualink.lua.LuaImport
-import xyz.galaxyy.lualink.lua.LuaScript
 import xyz.galaxyy.lualink.lua.LuaUtils
 import xyz.galaxyy.lualink.lua.misc.PrintOverride
 import xyz.galaxyy.lualink.lua.wrappers.LuaEnumWrapper
-import xyz.galaxyy.lualink.lua.wrappers.LuaPluginWrapper
+import xyz.galaxyy.lualink.lua.wrappers.LuaScript
 import java.io.File
 import java.util.function.Function
 
@@ -42,9 +42,9 @@ class LuaLink : JavaPlugin() {
         this.setupCloud()
         this.registerCommands()
         this.loadedScripts.forEach { script ->
-            if (script.pluginWrapper.onEnableCB?.isfunction() == true) {
+            if (script.onEnableCB?.isfunction() == true) {
                 try {
-                    script.pluginWrapper.onEnableCB?.call()
+                    script.onEnableCB?.call()
                 } catch (e: LuaError) {
                     this.logger.severe("LuaLink encountered an error while called onEnable for ${script.file.name}: ${e.message}")
                     e.printStackTrace()
@@ -127,15 +127,15 @@ class LuaLink : JavaPlugin() {
     // Should probably move this to a ScriptManager class
     fun loadScript(file: File) {
         val globals = JsePlatform.standardGlobals()
-        val pluginWrapper = LuaPluginWrapper(this)
-        val script = LuaScript(file, globals, pluginWrapper)
+        val script = LuaScript(this, file, globals)
         globals.load(LuaKotlinLib())
         globals.load(LuaKotlinExLib())
-        globals.set("plugin", pluginWrapper)
+        globals.set("script", script)
         globals.set("print", PrintOverride(this))
         globals.set("utils", LuaUtils(this))
         globals.set("enums", LuaEnumWrapper())
         globals.set("import", LuaImport())
+        globals.set("addons", LuaAddons())
         this.logger.info("Loading script ${file.name}")
         try {
             globals.loadfile(file.path).call()
@@ -144,9 +144,9 @@ class LuaLink : JavaPlugin() {
             return
         }
         loadedScripts.add(script)
-        if (script.pluginWrapper.onLoadCB?.isfunction() == true) {
+        if (script.onLoadCB?.isfunction() == true) {
             try {
-                script.pluginWrapper.onLoadCB?.call()
+                script.onLoadCB?.call()
             } catch (e: LuaError) {
                 this.logger.severe("LuaLink encountered an error while called onLoad for ${file.name}: ${e.message}")
                 return
@@ -155,7 +155,7 @@ class LuaLink : JavaPlugin() {
         Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
         if (this.isEnabled) {
             try {
-                script.pluginWrapper.onEnableCB?.call()
+                script.onEnableCB?.call()
             } catch (e: LuaError) {
                 this.logger.severe("LuaLink encountered an error while called onEnable for ${file.name}: ${e.message}")
                 return
@@ -165,10 +165,10 @@ class LuaLink : JavaPlugin() {
     }
 
     fun unLoadScript(script: LuaScript) {
-        script.pluginWrapper.listeners.forEach { listener ->
+        script.listeners.forEach { listener ->
             HandlerList.unregisterAll(listener)
         }
-        script.pluginWrapper.commands.forEach { command ->
+        script.commands.forEach { command ->
             command.unregister(this.server.commandMap)
             this.server.commandMap.knownCommands.remove(command.name)
             command.aliases.forEach { alias ->
@@ -176,9 +176,9 @@ class LuaLink : JavaPlugin() {
             }
             Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
         }
-        if (script.pluginWrapper.onDisableCB?.isfunction() == true) {
+        if (script.onDisableCB?.isfunction() == true) {
             try {
-                script.pluginWrapper.onDisableCB?.call()
+                script.onDisableCB?.call()
             } catch (e: LuaError) {
                 this.logger.severe("LuaLink encountered an error while called onDisable for ${script.file.name}: ${e.message}")
                 return
