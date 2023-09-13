@@ -135,6 +135,7 @@ class LuaLink : JavaPlugin() {
         globals.set("utils", LuaUtils(this))
         globals.set("enums", LuaEnumWrapper())
         globals.set("import", LuaImport())
+        globals.set("addons", LuaAddons())
         this.logger.info("Loading script ${file.name}")
         try {
             globals.loadfile(file.path).call()
