@@ -8,7 +8,7 @@ local function bringCommand(sender, args)
     if args[1] == "*" then
         -- Bring all online players to the command sender's location
         local senderLocation = sender:getLocation()
-        local onlinePlayers = plugin.getServer():getOnlinePlayers()
+        local onlinePlayers = script.getServer():getOnlinePlayers()
         for _, player in ipairs(totable(onlinePlayers)) do
             player:teleport(senderLocation)
             player:sendRichMessage("<green>You have been summoned by " .. sender:getName())
@@ -16,7 +16,7 @@ local function bringCommand(sender, args)
         sender:sendRichMessage("<green>You brought all players to your location!")
     else
         -- Bring a specific player to the command sender's location
-        local targetPlayer = plugin.getServer():getPlayer(args[1])
+        local targetPlayer = script.getServer():getPlayer(args[1])
         if targetPlayer then
             local senderLocation = sender:getLocation()
             targetPlayer:teleport(senderLocation)
@@ -35,7 +35,7 @@ end
 local function bringTabComplete(sender, alias, args)
     if #args == 1 then
         local query = args[1]:lower() -- Convert input query to lowercase for case-insensitive matching
-        local onlinePlayers = plugin.getServer():getOnlinePlayers()
+        local onlinePlayers = script.getServer():getOnlinePlayers()
         local suggestions = {}
 
         -- Filter player names based on the input query
@@ -58,7 +58,7 @@ local function bringTabComplete(sender, alias, args)
 end
 
 -- Register the /bring command
-plugin.registerSimpleCommand(bringCommand, {
+script.registerSimpleCommand(bringCommand, {
     name = "bring",
     description = "Bring a player to your location",
     usage = "/bring <player or *>",

@@ -1,5 +1,5 @@
 local function listen()
-    plugin.hook("org.bukkit.event.player.PlayerJoinEvent", function(event)
+    script.hook("org.bukkit.event.player.PlayerJoinEvent", function(event)
         local player = event:getPlayer()
         player:playSound(player:getLocation() ,enums.Sound.ENTITY_FIREWORK_ROCKET_BLAST, 10.0, 10.0)
 
@@ -7,7 +7,7 @@ local function listen()
     end)
 end
 
-plugin.onEnable(function()
-    plugin.logger.info("Welcomer loaded! PS: You don't have to do this in every script, MCServer will do it for you.")
+script.onEnable(function()
+    script.logger.info("Welcomer loaded! PS: You don't have to do this in every script, MCServer will do it for you.")
     listen()
 end)

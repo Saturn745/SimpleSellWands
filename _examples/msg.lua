@@ -3,7 +3,7 @@ local lastMessaged = {} -- Store the last person messaged for /r (using UUIDs)
 -- Function to send a private message
 local function sendPrivateMessage(sender, target, message)
     -- Check if the target player is online
-    local targetPlayer = plugin.getServer():getPlayer(target)
+    local targetPlayer = script.getServer():getPlayer(target)
     if targetPlayer then
         -- Send the message to the target
         targetPlayer:sendRichMessage("<gray>[From " .. sender:getName() .. "]: <reset>" .. message)
@@ -18,7 +18,7 @@ local function sendPrivateMessage(sender, target, message)
 end
 
 -- Register the /msg command
-plugin.registerSimpleCommand(function(sender, args)
+script.registerSimpleCommand(function(sender, args)
     if #args < 2 then
         sender:sendRichMessage("<red>Usage: /msg <player> <message>")
         return
@@ -36,7 +36,7 @@ end, {
 })
 
 -- Register the /r command
-plugin.registerSimpleCommand(function(sender, args)
+script.registerSimpleCommand(function(sender, args)
     local lastTargetUUID = lastMessaged[sender:getUniqueId()]
 
     if not lastTargetUUID then
@@ -44,7 +44,7 @@ plugin.registerSimpleCommand(function(sender, args)
         return
     end
 
-    local lastTarget = plugin.getServer():getPlayer(lastTargetUUID)
+    local lastTarget = script.getServer():getPlayer(lastTargetUUID)
 
     if not lastTarget then
         sender:sendRichMessage("<red>Player not found.")

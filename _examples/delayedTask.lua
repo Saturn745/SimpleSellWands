@@ -1,4 +1,4 @@
-plugin.registerSimpleCommand(function(sender, args)
+script.registerSimpleCommand(function(sender, args)
     sender:sendRichMessage("<green>Hello, "..sender:getName())
     utils.scheduleSyncDelayedTask(function()
             sender:sendRichMessage("<yellow>This was sent 40 ticks later (2 seconds)! BukkitScheduler works!")

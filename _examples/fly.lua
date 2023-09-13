@@ -1,4 +1,4 @@
-plugin.registerSimpleCommand(function(sender, args)
+script.registerSimpleCommand(function(sender, args)
     if not utils.instanceOf(sender, "org.bukkit.entity.Player") then
         sender:sendRichMessage("<red>This command can only be ran by a player!")
         return
