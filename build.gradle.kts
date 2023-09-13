@@ -66,7 +66,7 @@ hangarPublish {
         channel.set("Beta")
         changelog.set(System.getenv("GIT_COMMIT_MESSAGE")) // optional
 
-        apiKey.set("03259ae1-dde1-4334-ae63-f35cfb93dba1.968fa354-fe17-4b0a-8f7a-ad589c77075d")
+        apiKey.set(System.getenv("HANGAR_API_KEY"))
 
         platforms {
             register(Platforms.PAPER) {
