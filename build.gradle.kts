@@ -7,6 +7,7 @@ plugins {
     id("net.minecrell.plugin-yml.paper") version "0.6.0"
     id("com.modrinth.minotaur") version "2.8.2"
     id("io.papermc.hangar-publish-plugin") version "0.1.0"
+    id("maven-publish")
     application
 }
 val buildNum = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
@@ -21,15 +22,20 @@ repositories {
 }
 
 val cloudVersion: String by project
-
+val luaKTVersion: String by project
 dependencies {
     testImplementation(kotlin("test"))
     library(kotlin("stdlib"))
+    api(kotlin("stdlib"))
     compileOnly("org.purpurmc.purpur:purpur-api:1.20.1-R0.1-SNAPSHOT")
-    library("com.github.only52607.luakt:luakt:2.6.1")
-    library("com.github.only52607.luakt:luakt-core:2.6.1")
-    library("com.github.only52607.luakt:luakt-extension:2.6.1")
-    library("com.github.only52607.luakt:luakt-luaj:2.6.1")
+    library("com.github.only52607.luakt:luakt:$luaKTVersion")
+    library("com.github.only52607.luakt:luakt-core:$luaKTVersion")
+    library("com.github.only52607.luakt:luakt-extension:$luaKTVersion")
+    library("com.github.only52607.luakt:luakt-luaj:$luaKTVersion")
+    api("com.github.only52607.luakt:luakt:$luaKTVersion")
+    api("com.github.only52607.luakt:luakt-core:$luaKTVersion")
+    api("com.github.only52607.luakt:luakt-extension:$luaKTVersion")
+    api("com.github.only52607.luakt:luakt-luaj:$luaKTVersion")
     library("cloud.commandframework:cloud-paper:$cloudVersion")
     library("cloud.commandframework:cloud-brigadier:$cloudVersion")
     library("cloud.commandframework:cloud-annotations:$cloudVersion")
@@ -76,6 +82,28 @@ hangarPublish {
         }
     }
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("plugin") {
+            groupId = "xyz.galaxyy.lualink"
+            artifactId = "lualink"
+            version = project.version as String
+
+            from(components["java"])
+
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
+        }
+    }
+}
+
 
 
 tasks.test {
