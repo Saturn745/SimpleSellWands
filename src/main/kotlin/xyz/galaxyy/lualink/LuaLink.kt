@@ -20,6 +20,7 @@ import org.luaj.vm2.lib.jse.JsePlatform
 import xyz.galaxyy.lualink.commands.AvailableScriptParser
 import xyz.galaxyy.lualink.commands.LoadedScriptParser
 import xyz.galaxyy.lualink.commands.LuaLinkCommands
+import xyz.galaxyy.lualink.lua.LuaAddons
 import xyz.galaxyy.lualink.lua.LuaImport
 import xyz.galaxyy.lualink.lua.LuaUtils
 import xyz.galaxyy.lualink.lua.misc.PrintOverride
