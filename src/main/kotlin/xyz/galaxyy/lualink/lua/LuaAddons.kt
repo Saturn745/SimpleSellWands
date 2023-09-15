@@ -12,19 +12,9 @@ internal class LuaAddons : LuaTable() {
                     throw IllegalArgumentException("get expects 1 argument: addonName")
                 }
                 val addonName = arg.checkjstring()
-                val addon = LuaLinkAPI.getAddon(addonName) ?: throw IllegalArgumentException("Addon not found")
 
-                val addonTable = LuaTable()
-
-                for (func in addon.getFunctions()) {
-                    addonTable.set(func.key, func.value)
-                }
-
-                for (table in addon.getTables()) {
-                    addonTable.set(table.key, table.value)
-                }
-
-                return addonTable
+                return LuaLinkAPI.getAddonFromCache(addonName)
+                    ?: throw IllegalArgumentException("Addon $addonName does not exist")
             }
         })
 
