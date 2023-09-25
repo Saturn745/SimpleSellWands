@@ -21,8 +21,9 @@ import xyz.galaxyy.lualink.commands.AvailableScriptParser
 import xyz.galaxyy.lualink.commands.LoadedScriptParser
 import xyz.galaxyy.lualink.commands.LuaLinkCommands
 import xyz.galaxyy.lualink.lua.LuaAddons
-import xyz.galaxyy.lualink.lua.LuaImport
+import xyz.galaxyy.lualink.lua.misc.LuaImport
 import xyz.galaxyy.lualink.lua.LuaUtils
+import xyz.galaxyy.lualink.lua.misc.LuaNewInstance
 import xyz.galaxyy.lualink.lua.misc.PrintOverride
 import xyz.galaxyy.lualink.lua.wrappers.LuaEnumWrapper
 import xyz.galaxyy.lualink.lua.wrappers.LuaScript
@@ -135,6 +136,7 @@ class LuaLink : JavaPlugin() {
         globals.set("utils", LuaUtils(this))
         globals.set("enums", LuaEnumWrapper())
         globals.set("import", LuaImport())
+        globals.set("newInstance", LuaNewInstance())
         globals.set("addons", LuaAddons())
         this.logger.info("Loading script ${file.name}")
         try {

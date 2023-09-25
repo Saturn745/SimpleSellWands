@@ -1,4 +1,4 @@
-package xyz.galaxyy.lualink.lua
+package xyz.galaxyy.lualink.lua.misc
 
 import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.OneArgFunction
