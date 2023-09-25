@@ -176,10 +176,8 @@ class LuaLink : JavaPlugin() {
             }
             Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
         }
-        val tasksToCancel = script.tasks.toList() // Make a copy of the list
-        tasksToCancel.forEach { taskId ->
+        script.tasks.forEach { taskId ->
             Bukkit.getScheduler().cancelTask(taskId)
-            script.tasks.remove(taskId)
         }
         if (script.onDisableCB?.isfunction() == true) {
             try {
