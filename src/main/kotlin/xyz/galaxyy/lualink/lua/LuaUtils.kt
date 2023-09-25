@@ -158,6 +158,10 @@ class LuaUtils(private val plugin: LuaLink, private val script: LuaScript) : Lua
 
                 Bukkit.getScheduler().cancelTask(taskId)
 
+                if (script.tasks.contains(taskId)) {
+                    script.tasks.remove(taskId)
+                }
+
                 return LuaValue.NIL
             }
         })
