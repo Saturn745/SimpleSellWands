@@ -124,7 +124,7 @@ class LuaLink : JavaPlugin() {
     }
 
 
-    // Should probably move this to a ScriptManager class
+    // TODO: Move this to a script manager class
     fun loadScript(file: File) {
         val globals = JsePlatform.standardGlobals()
         val script = LuaScript(this, file, globals)
