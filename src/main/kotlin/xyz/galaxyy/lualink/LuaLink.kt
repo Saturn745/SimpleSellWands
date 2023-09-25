@@ -132,7 +132,7 @@ class LuaLink : JavaPlugin() {
         globals.load(LuaKotlinExLib())
         globals.set("script", script)
         globals.set("print", PrintOverride(this))
-        globals.set("utils", LuaUtils(this))
+        globals.set("utils", LuaUtils(this, script)) // Passing script to LuaUtils for state
         globals.set("enums", LuaEnumWrapper())
         globals.set("import", LuaImport())
         globals.set("addons", LuaAddons())
@@ -175,6 +175,11 @@ class LuaLink : JavaPlugin() {
                 this.server.commandMap.knownCommands.remove(alias)
             }
             Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
+        }
+        val tasksToCancel = script.tasks.toList() // Make a copy of the list
+        tasksToCancel.forEach { taskId ->
+            Bukkit.getScheduler().cancelTask(taskId)
+            script.tasks.remove(taskId)
         }
         if (script.onDisableCB?.isfunction() == true) {
             try {

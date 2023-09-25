@@ -13,20 +13,21 @@ import xyz.galaxyy.lualink.lua.commands.LuaCommandHandler
 import xyz.galaxyy.lualink.lua.misc.LuaLogger
 import java.io.File
 
-
+// LuaScript contains the Lua script's globals, callbacks, and command and listener handlers and is used to store script state and metadata
 class LuaScript(private val plugin: LuaLink, val file: File, val globals: Globals) : LuaTable() {
-    var onLoadCB: LuaValue? = null
+    internal var onLoadCB: LuaValue? = null
         private set
 
-    var onEnableCB: LuaValue? = null
+    internal var onEnableCB: LuaValue? = null
         private set
 
-    var onDisableCB: LuaValue? = null
+    internal var onDisableCB: LuaValue? = null
         private set
 
     val commands: MutableList<LuaCommandHandler> = mutableListOf()
     val listeners: MutableList<Listener> = mutableListOf()
-
+    // Stores task IDs so they can be cancelled on unload
+    internal val tasks: MutableList<Int> = mutableListOf()
     init {
         this.set("onLoad", object : VarArgFunction() {
             override fun call(callback: LuaValue): LuaValue {
@@ -90,7 +91,7 @@ class LuaScript(private val plugin: LuaLink, val file: File, val globals: Global
             }
         })
 
-        this.set("logger", CoerceKotlinToLua.coerce(LuaLogger(this.plugin)))
+        this.set("logger", LuaLogger(this.plugin))
         this.set("getServer", object: ZeroArgFunction() {
             override fun call(): LuaValue {
                 return CoerceKotlinToLua.coerce(Bukkit.getServer())

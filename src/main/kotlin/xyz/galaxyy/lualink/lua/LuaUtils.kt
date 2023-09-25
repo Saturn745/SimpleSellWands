@@ -7,8 +7,9 @@ import org.luaj.vm2.LuaValue
 import org.luaj.vm2.Varargs
 import org.luaj.vm2.lib.VarArgFunction
 import xyz.galaxyy.lualink.LuaLink
+import xyz.galaxyy.lualink.lua.wrappers.LuaScript
 
-class LuaUtils(private val plugin: LuaLink) : LuaTable() {
+class LuaUtils(private val plugin: LuaLink, private val script: LuaScript) : LuaTable() {
     init {
         this.set("instanceOf", object: VarArgFunction() {
             override fun invoke(args: Varargs?): Varargs {
@@ -46,6 +47,8 @@ class LuaUtils(private val plugin: LuaLink) : LuaTable() {
                     callback.call()
                 })
 
+                script.tasks.add(task.taskId)
+
                 return CoerceKotlinToLua.coerce(task)
             }
         })
@@ -61,6 +64,8 @@ class LuaUtils(private val plugin: LuaLink) : LuaTable() {
                 val task = Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
                     callback.call()
                 })
+
+                script.tasks.add(task.taskId)
 
                 return CoerceKotlinToLua.coerce(task)
             }
@@ -78,6 +83,8 @@ class LuaUtils(private val plugin: LuaLink) : LuaTable() {
                 val task = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, {
                     callback.call()
                 }, delay.toLong())
+
+                script.tasks.add(task)
 
                 return LuaValue.valueOf(task)
             }
@@ -97,24 +104,9 @@ class LuaUtils(private val plugin: LuaLink) : LuaTable() {
                     callback.call()
                 }, delay.toLong(), period.toLong())
 
+                script.tasks.add(task)
+
                 return LuaValue.valueOf(task)
-            }
-        })
-
-        this.set("runTaskLaterAsynchronously", object: VarArgFunction() {
-            override fun invoke(args: Varargs?): Varargs {
-                if (args == null || args.narg() != 2) {
-                    throw IllegalArgumentException("scheduleAsyncDelayedTask expects 2 arguments: callback, delay")
-                }
-
-                val callback = args.arg(1).checkfunction()
-                val delay = args.arg(2).checkint()
-
-                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, Runnable {
-                    callback.call()
-                }, delay.toLong())
-
-                return CoerceKotlinToLua.coerce(task)
             }
         })
 
@@ -130,6 +122,8 @@ class LuaUtils(private val plugin: LuaLink) : LuaTable() {
                     callback.call()
                 })
 
+                script.tasks.add(task.taskId)
+
                 return CoerceKotlinToLua.coerce(task)
             }
         })
@@ -143,9 +137,11 @@ class LuaUtils(private val plugin: LuaLink) : LuaTable() {
                 val callback = args.arg(1).checkfunction()
                 val delay = args.arg(2).checkint()
 
-                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, Runnable {
+                val task = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, Runnable  {
                     callback.call()
                 }, delay.toLong())
+
+                script.tasks.add(task.taskId)
 
                 return CoerceKotlinToLua.coerce(task)
             }
