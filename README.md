@@ -21,11 +21,11 @@ To use the LuaLink plugin, you need the following:
 
 ### Hello command
 ```lua
-plugin.onEnable(function()
+script.onEnable(function()
     plugin.logger.info("Hello world command enabled!!!!!!!! Let's be annoying and make every script spam console when it loads")
 end)
 
-plugin.registerSimpleCommand(function(sender, args)
+script.registerSimpleCommand(function(sender, args)
     sender:sendRichMessage("<green>Hello, "..sender:getName())
 end, {
     name = "hello",
