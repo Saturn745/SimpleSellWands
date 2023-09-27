@@ -148,6 +148,25 @@ class LuaUtils(private val plugin: LuaLink, private val script: LuaScript) : Lua
             }
         })
 
+        this.set("runTaskLater", object: VarArgFunction() {
+            override fun invoke(args: Varargs?): Varargs {
+                if (args == null || args.narg() != 2) {
+                    throw IllegalArgumentException("runTaskLater expects 2 arguments: callback, delay")
+                }
+
+                val callback = args.arg(1).checkfunction()
+                val delay = args.arg(2).checkint()
+
+                val task = Bukkit.getScheduler().runTaskLater(plugin, Runnable  {
+                    callback.call()
+                }, delay.toLong())
+
+                script.tasks.add(task.taskId)
+
+                return CoerceKotlinToLua.coerce(task)
+            }
+        })
+
         this.set("cancelTask", object: OneArgFunction() {
             override fun call(arg: LuaValue?): LuaValue {
                 if (arg == null || !arg.isint()) {
