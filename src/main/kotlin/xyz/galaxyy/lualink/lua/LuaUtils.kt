@@ -8,7 +8,6 @@ import org.luaj.vm2.Varargs
 import org.luaj.vm2.lib.OneArgFunction
 import org.luaj.vm2.lib.VarArgFunction
 import xyz.galaxyy.lualink.LuaLink
-import xyz.galaxyy.lualink.lua.wrappers.LuaScript
 
 class LuaUtils(private val plugin: LuaLink, private val script: LuaScript) : LuaTable() {
     init {

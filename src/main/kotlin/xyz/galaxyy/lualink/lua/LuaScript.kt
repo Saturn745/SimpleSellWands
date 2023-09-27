@@ -1,4 +1,4 @@
-package xyz.galaxyy.lualink.lua.wrappers
+package xyz.galaxyy.lualink.lua
 
 import com.github.only52607.luakt.CoerceKotlinToLua
 import org.bukkit.Bukkit
@@ -18,10 +18,7 @@ class LuaScript(private val plugin: LuaLink, val file: File, val globals: Global
     internal var onLoadCB: LuaValue? = null
         private set
 
-    internal var onEnableCB: LuaValue? = null
-        private set
-
-    internal var onDisableCB: LuaValue? = null
+    internal var onUnloadCB: LuaValue? = null
         private set
 
     val commands: MutableList<LuaCommandHandler> = mutableListOf()
@@ -40,21 +37,10 @@ class LuaScript(private val plugin: LuaLink, val file: File, val globals: Global
             }
         })
 
-        this.set("onEnable", object : VarArgFunction() {
+        this.set("onUnload", object : VarArgFunction() {
             override fun call(callback: LuaValue): LuaValue {
                 if (callback.isfunction()) {
-                    onEnableCB = callback
-                } else {
-                    throw LuaError("onEnable callback must be a function")
-                }
-                return LuaValue.NIL
-            }
-        })
-
-        this.set("onDisable", object : VarArgFunction() {
-            override fun call(callback: LuaValue): LuaValue {
-                if (callback.isfunction()) {
-                    onDisableCB = callback
+                    onUnloadCB = callback
                 } else {
                     throw LuaError("onDisable callback must be a function")
                 }
@@ -100,7 +86,7 @@ class LuaScript(private val plugin: LuaLink, val file: File, val globals: Global
     }
 
     private fun registerCommand(callback: LuaFunction, metadata: LuaTable) {
-        val command: LuaCommandHandler = LuaCommandHandler(this.plugin, callback, metadata)
+        val command = LuaCommandHandler(this.plugin, callback, metadata)
 
         this.commands.add(command)
 
@@ -114,8 +100,8 @@ class LuaScript(private val plugin: LuaLink, val file: File, val globals: Global
             }
             val listener = object : Listener {}
 
-            this.plugin.server.pluginManager.registerEvent(eventClass as Class<out org.bukkit.event.Event>, listener, EventPriority.NORMAL, { _, event ->
-                callback.invoke(CoerceKotlinToLua.coerce(event))
+            this.plugin.server.pluginManager.registerEvent(eventClass as Class<out org.bukkit.event.Event>, listener, EventPriority.NORMAL, { _, eventObj ->
+                callback.invoke(CoerceKotlinToLua.coerce(eventObj))
             }, this.plugin)
 
             this.listeners.add(listener)
