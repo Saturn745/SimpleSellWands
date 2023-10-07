@@ -137,17 +137,17 @@ end)
 Scheduler can be used to register single-use, delayed or repeating tasks.
 ```lua
 -- Schedules task to be run on the next tick.
-script.run(function()
+scheduler.run(function()
     -- Whatever belongs to the task goes here.
 end)
 
 -- Schedules task to be run after 20 ticks has passed. Task function parameter can be ommited if not used. 
-script.runDelayed(function(task)
+scheduler.runDelayed(function(task)
     -- Whatever belongs to the task goes here.
 end, 20)
 
 -- Schedules task to be run after 20 ticks has passed, and repeated every 160 ticks. Task function parameter can be ommited if not used. 
-script.runRepeating(function(task)
+scheduler.runRepeating(function(task)
     -- Whatever belongs to the task goes here.
 end, 20, 160)
 ```
@@ -155,11 +155,11 @@ end, 20, 160)
 Tasks can also be run asynchronously, but please note that neither the Bukkit API nor the LuaLink API is guaranteed to be thread-safe.
 ```lua
 -- Schedules asynchronous task to be run on the next tick.
-script.runAsync(callback: () -> void): void
+scheduler.runAsync(callback: () -> void): void
 -- Schedules asynchronous task to be run after {delay} ticks has passed. Task function parameter can be ommited if not used. 
-script.runDelayedAsync(callback: (task: BukkitTask) -> void, delay: number): BukkitTask
+scheduler.runDelayedAsync(callback: (task: BukkitTask) -> void, delay: number): BukkitTask
 -- Schedules task to be run after {delay} ticks has passed, and repeated every {period} ticks. Task function parameter can be ommited if not used. 
-script.runRepeatingAsync(callback: (task: BukkitTask) -> void, delay: number, period: number): BukkitTask
+scheduler.runRepeatingAsync(callback: (task: BukkitTask) -> void, delay: number, period: number): BukkitTask
 ```
 
 <br />
