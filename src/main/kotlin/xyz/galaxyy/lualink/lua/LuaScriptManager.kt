@@ -5,6 +5,7 @@ import com.github.only52607.luakt.lib.LuaKotlinLib
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.luaj.vm2.LuaError
+import org.luaj.vm2.LuaValue
 import org.luaj.vm2.lib.jse.JsePlatform
 import xyz.galaxyy.lualink.LuaLink
 import xyz.galaxyy.lualink.lua.misc.PrintOverride
@@ -18,7 +19,7 @@ class LuaScriptManager(private val plugin: LuaLink) {
         return loadedScripts.toList()
     }
 
-    fun loadScript(file: File) {
+    fun loadScript(file: File): LuaValue? {
         val globals = JsePlatform.standardGlobals()
         val script = LuaScript(this.plugin, file, globals)
         globals.load(LuaKotlinLib())
@@ -30,12 +31,13 @@ class LuaScriptManager(private val plugin: LuaLink) {
         globals.set("enums", LuaEnumWrapper())
         globals.set("import", LuaImport())
         globals.set("addons", LuaAddons())
-        this.plugin.logger.info("Loading script ${file.name}")
+        globals.set("require", LuaRequire(this.plugin, this))
+        val call: LuaValue?
         try {
-            globals.loadfile(file.path).call()
+            call = globals.loadfile(file.path).call()
         } catch (e: LuaError) {
             this.plugin.logger.severe("LuaLink encountered an error while loading ${file.name}: ${e.message}")
-            return
+            return null
         }
         loadedScripts.add(script)
         if (script.onLoadCB?.isfunction() == true) {
@@ -43,11 +45,11 @@ class LuaScriptManager(private val plugin: LuaLink) {
                 script.onLoadCB?.call()
             } catch (e: LuaError) {
                 this.plugin.logger.severe("LuaLink encountered an error while called onLoad for ${file.name}: ${e.message}")
-                return
+                return null
             }
         }
         Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
-        this.plugin.logger.info("Loaded script ${file.name}")
+        return call
     }
 
     fun unLoadScript(script: LuaScript) {
@@ -81,13 +83,20 @@ class LuaScriptManager(private val plugin: LuaLink) {
         if (!File(this.plugin.dataFolder.path+"/scripts").exists()) {
             File(this.plugin.dataFolder.path+"/scripts").mkdirs()
         }
+        if (!File(this.plugin.dataFolder.path+"/lua-libraries").exists()) {
+            File(this.plugin.dataFolder.path+"/lua-libraries").mkdirs()
+        }
 
         File(this.plugin.dataFolder.path+"/scripts").walk().forEach { file ->
             if (file.extension == "lua") {
                 if (file.name.startsWith(".")) {
                     return@forEach
                 }
-                this.loadScript(file)
+                this.plugin.logger.info("Loading script ${file.name}")
+                val loaded = this.loadScript(file)
+                if (loaded != null) {
+                    this.plugin.logger.info("Loaded script ${file.name}")
+                }
             } else {
                 if (file.name != "scripts") {
                     this.plugin.logger.warning("${file.name} is in the scripts folder but is not a lua file!")
