@@ -93,6 +93,5 @@ class LuaLink : JavaPlugin() {
         this.manager.parserRegistry().registerParserSupplier(
             TypeToken.get(File::class.java)
         ) { AvailableScriptParser(this, this.scriptManager) }
-
     }
 }

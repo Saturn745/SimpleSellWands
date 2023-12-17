@@ -76,6 +76,16 @@ class LuaScriptManager(private val plugin: LuaLink) {
         this.loadedScripts.remove(script)
     }
 
+    fun disableScript(script: LuaScript) {
+        script.file.renameTo(File(script.file.path+".d"))
+        this.unLoadScript(script)
+    }
+
+    fun enableScript(script: File) {
+        script.renameTo(File(script.path.removeSuffix(".d")))
+        this.loadScript(File(script.path.removeSuffix(".d")))
+    }
+
     fun loadScripts() {
         this.plugin.logger.info("Loading scripts...")
         if (!File(this.plugin.dataFolder.path+"/scripts").exists()) {
@@ -90,6 +100,8 @@ class LuaScriptManager(private val plugin: LuaLink) {
                 this.loadScript(file)
             } else {
                 if (file.name != "scripts") {
+                    if (file.name.endsWith(".d"))
+                        return // Don't load disabled scripts
                     this.plugin.logger.warning("${file.name} is in the scripts folder but is not a lua file!")
                 }
             }
