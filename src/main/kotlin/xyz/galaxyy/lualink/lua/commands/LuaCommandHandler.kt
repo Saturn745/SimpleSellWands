@@ -35,6 +35,10 @@ class LuaCommandHandler(private val plugin: LuaLink, private val callback: LuaFu
             sender.sendRichMessage("<red>This command can only be executed by players.")
             return true
         }
+        if (this.metadata.get("playerOnly").toboolean() && sender is Player) {
+            sender.sendRichMessage("<red>This command can only be executed by the console.")
+            return true
+        }
 
         if (this.metadata.get("runAsync").toboolean()) {
             Bukkit.getScheduler().runTaskAsynchronously(this.plugin, Runnable {
