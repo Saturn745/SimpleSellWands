@@ -12,7 +12,7 @@ plugins {
 }
 val buildNum = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
 group = "xyz.galaxyy.lualink"
-version = "1.20.1-$buildNum"
+version = "1.20.2-$buildNum"
 
 repositories {
     mavenCentral()
