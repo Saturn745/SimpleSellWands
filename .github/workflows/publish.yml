@@ -27,7 +27,7 @@ jobs:
           ./gradlew publishPluginPublicationToGitHubPackagesRepository
       - name: Build and Publish to Modrinth
         run: |
-          ./gradlew modrinth
+          ./gradlew modrinth --stacktrace
       - name: Build and Publish to Hangar
         run: |
           ./gradlew publishPluginPublicationToHangar
