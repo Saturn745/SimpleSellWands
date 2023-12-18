@@ -60,8 +60,11 @@ class LuaScriptManager(private val plugin: LuaLink) {
             command.aliases.forEach { alias ->
                 this.plugin.server.commandMap.knownCommands.remove(alias)
             }
-            Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
         }
+        script.briagadierCommands.forEach { command ->
+            this.plugin.paperCommandManager.deleteRootCommand(command)
+        }
+        Bukkit.getServer().javaClass.getMethod("syncCommands").invoke(Bukkit.getServer())
         script.tasks.forEach { taskId ->
             Bukkit.getScheduler().cancelTask(taskId)
         }

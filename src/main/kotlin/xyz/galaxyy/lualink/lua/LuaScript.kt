@@ -1,7 +1,15 @@
 package xyz.galaxyy.lualink.lua
 
+import cloud.commandframework.ArgumentDescription
+import cloud.commandframework.arguments.CommandArgument
+import cloud.commandframework.bukkit.parsers.WorldArgument
+import cloud.commandframework.context.CommandContext
+import cloud.commandframework.meta.CommandMeta
 import com.github.only52607.luakt.CoerceKotlinToLua
+import com.github.only52607.luakt.CoerceLuaToKotlin
 import org.bukkit.Bukkit
+import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -9,6 +17,7 @@ import org.luaj.vm2.*
 import org.luaj.vm2.lib.VarArgFunction
 import org.luaj.vm2.lib.ZeroArgFunction
 import xyz.galaxyy.lualink.LuaLink
+import xyz.galaxyy.lualink.lua.commands.CommandArgumentMap
 import xyz.galaxyy.lualink.lua.commands.LuaCommandHandler
 import xyz.galaxyy.lualink.lua.misc.LuaLogger
 import java.io.File
@@ -22,6 +31,7 @@ class LuaScript(private val plugin: LuaLink, val file: File, val globals: Global
         private set
 
     val commands: MutableList<LuaCommandHandler> = mutableListOf()
+    val briagadierCommands: MutableList<String> = mutableListOf()
     val listeners: MutableList<Listener> = mutableListOf()
     // Stores task IDs so they can be cancelled on unload
     internal val tasks: MutableList<Int> = mutableListOf()
@@ -48,7 +58,7 @@ class LuaScript(private val plugin: LuaLink, val file: File, val globals: Global
             }
         })
 
-        this.set("registerSimpleCommand", object : VarArgFunction() {
+        this.set("registerCommand", object : VarArgFunction() {
             override fun invoke(args: Varargs): Varargs {
                 if (args.narg() != 2 || !args.isfunction(1) || !args.istable(2)) {
                     throw IllegalArgumentException("registerSimpleCommand expects 2 arguments: function, string")
@@ -57,10 +67,78 @@ class LuaScript(private val plugin: LuaLink, val file: File, val globals: Global
                 val callback: LuaFunction = args.checkfunction(1)
                 val metadata: LuaTable = args.checktable(2)
 
+                if (metadata.get("useCloud").toboolean()) {
+                    var builder = this@LuaScript.plugin.paperCommandManager.commandBuilder(metadata.get("name").tojstring())
+
+                    if (!metadata.get("description").isnil())
+                        builder = builder.meta(CommandMeta.DESCRIPTION, metadata.get("description").tojstring())
+                    builder = if (metadata.get("consoleOnly").toboolean() && !metadata.get("playerOnly").toboolean())
+                        builder.senderType(ConsoleCommandSender::class.java)
+                    else if (metadata.get("playerOnly").toboolean() && !metadata.get("consoleOnly").toboolean())
+                        builder.senderType(org.bukkit.entity.Player::class.java)
+                    else
+                        builder.senderType(CommandSender::class.java) // Default to CommandSender, can be either console or player, script will need to check if it's a player
+
+                    if (metadata.get("runAsync").toboolean()) {
+                        builder = builder.handler { context: CommandContext<CommandSender> ->
+                            this@LuaScript.plugin.paperCommandManager.taskRecipe()
+                                .begin(context)
+                                .asynchronous { c ->
+                                    try {
+                                        callback.invoke(CoerceKotlinToLua.coerce(c))
+                                    } catch (e: LuaError) {
+                                        c.sender.sendRichMessage("<red>LuaLink encountered an error while executing this command. ${e.message}")
+                                    }
+                                }.execute()
+                        }
+                    } else {
+                        builder = builder.handler { context: CommandContext<CommandSender> ->
+                            this@LuaScript.plugin.paperCommandManager.taskRecipe()
+                                .begin(context)
+                                .synchronous { c ->
+                                    try {
+                                        callback.invoke(CoerceKotlinToLua.coerce(c))
+                                    } catch (e: LuaError) {
+                                        c.sender.sendRichMessage("<red>LuaLink encountered an error while executing this command. ${e.message}")
+                                    }
+                                }.execute()
+                        }
+                    }
+
+                    val commandArgs = metadata.get("args")
+
+                    // Loop through args table and add them to the command
+                    for (i in 1..commandArgs.length()) {
+                        val arg = commandArgs.get(i)
+                        val argType = CommandArgumentMap.Arguments[arg.get("type").tojstring()]
+                            ?: throw IllegalArgumentException("Invalid argument type: ${arg.get("type").tojstring()}")
+
+                        // CommandArgument#of is static so no inheritance, so we have to do this. Luckily this only happens once on command registration
+                        builder = if (arg.get("optional").toboolean()) {
+                            builder.argument(
+                                // TODO: Default value support
+                                argType.getDeclaredMethod("optional", String::class.java).invoke(null, arg.get("name").tojstring() ?: arg.get("type").tojstring()) as CommandArgument<CommandSender, *>,
+                                ArgumentDescription.of(arg.get("description").tojstring() ?: "No description provided"),
+                            )
+                        } else {
+                            builder.argument(
+                                argType.getDeclaredMethod("of", String::class.java).invoke(null, arg.get("name").tojstring() ?: arg.get("type").tojstring()) as CommandArgument<CommandSender, *>,
+                                ArgumentDescription.of(arg.get("description").tojstring() ?: "No description provided"),
+                            )
+                        }
+                    }
+                    builder = builder.permission(metadata.get("permission").tojstring())
+                    this@LuaScript.plugin.paperCommandManager.command(builder)
+                    this@LuaScript.briagadierCommands.add(metadata.get("name").tojstring())
+                    return LuaValue.NIL
+                }
+
                 this@LuaScript.registerCommand(callback, metadata)
                 return LuaValue.NIL
             }
         })
+
+        this.set("registerSimpleCommand", this.get("registerCommand")) // Compatibility with old API
 
         this.set("hook", object: VarArgFunction() {
             override fun invoke(args: Varargs): LuaValue {

@@ -1,5 +1,7 @@
 package xyz.galaxyy.lualink
 
+import cloud.commandframework.CloudCapability
+import cloud.commandframework.CommandManager
 import cloud.commandframework.annotations.AnnotationParser
 import cloud.commandframework.arguments.parser.ParserParameters
 import cloud.commandframework.arguments.parser.StandardParameters
@@ -21,7 +23,8 @@ import java.io.File
 import java.util.function.Function
 
 class LuaLink : JavaPlugin() {
-    private lateinit var manager: PaperCommandManager<CommandSender>
+    lateinit var paperCommandManager: PaperCommandManager<CommandSender>
+        private set
     private lateinit var annotationParser: AnnotationParser<CommandSender>
     private val scriptManager: LuaScriptManager = LuaScriptManager(this)
     override fun onEnable() {
@@ -43,7 +46,7 @@ class LuaLink : JavaPlugin() {
 
             val mapperFunction: Function<CommandSender, CommandSender> = Function.identity()
             try {
-                this.manager = PaperCommandManager( /* Owning plugin */
+                this.paperCommandManager = PaperCommandManager( /* Owning plugin */
                     this,  /* Coordinator function */
                     executionCoordinatorFunction,  /* Command Sender -> C */
                     mapperFunction,  /* C -> Command Sender */
@@ -58,21 +61,19 @@ class LuaLink : JavaPlugin() {
             // Use contains to filter suggestions instead of default startsWith
 
             // Use contains to filter suggestions instead of default startsWith
-            manager.commandSuggestionProcessor(
+            paperCommandManager.commandSuggestionProcessor(
                 FilteringCommandSuggestionProcessor(
                     FilteringCommandSuggestionProcessor.Filter.contains<CommandSender>(true).andTrimBeforeLastSpace()
                 )
             )
 
-            if (this.manager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
-                this.manager.registerBrigadier()
+            if (this.paperCommandManager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
+                this.paperCommandManager.registerBrigadier()
             }
 
-            if (this.manager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
-                this.manager.registerAsynchronousCompletions()
+            if (this.paperCommandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+                this.paperCommandManager.registerAsynchronousCompletions()
             }
-
-
 
             val commandMetaFunction: Function<ParserParameters, CommandMeta> =
                 Function<ParserParameters, CommandMeta> { p ->
@@ -81,16 +82,18 @@ class LuaLink : JavaPlugin() {
                         .build()
                 }
             this.annotationParser = AnnotationParser( /* Manager */
-                this.manager,  /* Command sender type */
+                this.paperCommandManager,  /* Command sender type */
                 CommandSender::class.java,  /* Mapper for command meta instances */
                 commandMetaFunction
             )
 
-        this.manager.parserRegistry().registerParserSupplier(
+        this.paperCommandManager.setSetting(CommandManager.ManagerSettings.ALLOW_UNSAFE_REGISTRATION, true)
+
+        this.paperCommandManager.parserRegistry().registerParserSupplier(
             TypeToken.get(LuaScript::class.java)
         ) { LoadedScriptParser(this.scriptManager) }
 
-        this.manager.parserRegistry().registerParserSupplier(
+        this.paperCommandManager.parserRegistry().registerParserSupplier(
             TypeToken.get(File::class.java)
         ) { AvailableScriptParser(this, this.scriptManager) }
     }
