@@ -101,7 +101,7 @@ class LuaScriptManager(private val plugin: LuaLink) {
             } else {
                 if (file.name != "scripts") {
                     if (file.name.endsWith(".d"))
-                        return // Don't load disabled scripts
+                        return@forEach
                     this.plugin.logger.warning("${file.name} is in the scripts folder but is not a lua file!")
                 }
             }

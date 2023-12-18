@@ -4,6 +4,7 @@ import com.github.only52607.luakt.CoerceKotlinToLua
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import org.luaj.vm2.LuaError
 import org.luaj.vm2.LuaFunction
@@ -31,12 +32,12 @@ class LuaCommandHandler(private val plugin: LuaLink, private val callback: LuaFu
         }
     }
     override fun execute(sender: CommandSender, commandLabel: String, args: Array<out String>?): Boolean {
-        if (this.metadata.get("consoleOnly").toboolean() && sender !is Player) {
-            sender.sendRichMessage("<red>This command can only be executed by players.")
+        if (this.metadata.get("consoleOnly").toboolean() && sender !is ConsoleCommandSender) {
+            sender.sendRichMessage("<red>This command can only be executed by console.")
             return true
         }
-        if (this.metadata.get("playerOnly").toboolean() && sender is Player) {
-            sender.sendRichMessage("<red>This command can only be executed by the console.")
+        if (this.metadata.get("playerOnly").toboolean() && sender !is Player) {
+            sender.sendRichMessage("<red>This command can only be executed by a player.")
             return true
         }
 
