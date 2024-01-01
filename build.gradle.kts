@@ -1,11 +1,13 @@
 plugins {
     id("java")
     id("net.minecrell.plugin-yml.paper") version "0.6.0"
+    id("com.modrinth.minotaur") version "2.8.2"
 }
 
-group = "xyz.galaxyy.SimpleSellWand"
+val buildNum = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
 
-version = "1.0-SNAPSHOT"
+group = "xyz.galaxyy.SimpleSellWand"
+version = "1.20.2-$buildNum"
 
 repositories {
     mavenCentral()
@@ -39,6 +41,17 @@ paper {
         register("EconomyShopGUI") { required = false }
         register("EconomyShopGUI-Premium") { required = false }
     }
+}
+
+modrinth {
+    token.set(System.getenv("MODRINTH_TOKEN"))
+    projectId.set("simplesellwands")
+    versionNumber.set(version.toString())
+    versionType.set("beta")
+    uploadFile.set(tasks.jar.get())
+    gameVersions.addAll("1.20.1", "1.20.2")
+    loaders.addAll("paper", "purpur")
+    changelog.set(System.getenv("GIT_COMMIT_MESSAGE"))
 }
 
 tasks.test { useJUnitPlatform() }
