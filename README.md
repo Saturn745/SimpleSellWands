@@ -19,6 +19,7 @@ A simple PaperMC plugin which provides sell wands for your players to quickly se
 # Config
 <details>
   <summary><b>Default Configuration (HOCON)</b></summary>
+
 ```hocon
 # The economy plugin to use. Currently only Vault is supported.
 economy-plugin=Vault
