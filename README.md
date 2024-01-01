@@ -1,4 +1,5 @@
 # SimpleSellWands
+<a href=https://modrinth.com/plugin/simplesellwands><img alt="modrinth" height="54" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg"></a>
 
 A simple PaperMC plugin which provides sell wands for your players to quickly sell chests of items!
 
