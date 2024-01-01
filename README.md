@@ -39,6 +39,7 @@ wands {
 ```
 </details>
 ## Wand Config Options
+
 | Key         | Type | Default Value | Description                                        |
 |-------------|------|---------------|----------------------------------------------------|
 | multiplier  | int  | 0             | The sell multiplier to apply when using this wand. |
