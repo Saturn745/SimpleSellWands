@@ -1,0 +1,22 @@
+ 
+name: CI
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: https://github.com/actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'adopt'
+      - name: Build and Publish to Modrinth
+        run: |
+          ./gradlew modrinth           

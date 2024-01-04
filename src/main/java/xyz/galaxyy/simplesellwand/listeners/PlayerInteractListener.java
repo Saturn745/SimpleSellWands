@@ -6,10 +6,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import xyz.galaxyy.simplesellwand.PDCKeys;
 import xyz.galaxyy.simplesellwand.SimpleSellWand;
 import xyz.galaxyy.simplesellwand.config.WandConfig;
@@ -31,10 +33,17 @@ public final class PlayerInteractListener implements Listener {
       return;
     }
     WandConfig wand = SimpleSellWand.getInstance().getConfigManager().getConfigData().wands()
-        .get(event.getItem().getItemMeta().getPersistentDataContainer().getOrDefault(PDCKeys.WandType,
-            PersistentDataType.STRING, "default"));
+        .get(event.getItem().getItemMeta().getPersistentDataContainer().get(PDCKeys.WandType,
+            PersistentDataType.STRING));
     if (wand == null) {
+      event.getPlayer().sendRichMessage("<red>That wand type does not exist.");
       return; // Not sure how this would happen, but just in case.
+    }
+    if (wand.usageLimit() != -1 && event.getItem().getItemMeta().getPersistentDataContainer()
+        .getOrDefault(PDCKeys.UsageLeft, PersistentDataType.INTEGER, 0) <= 0) {
+      event.getPlayer().sendMessage(MiniMessage.miniMessage()
+          .deserialize(SimpleSellWand.getInstance().getConfigManager().getConfigData().messages().noUsesLeft()));
+      return;
     }
 
     Chest chest = (Chest) event.getClickedBlock().getState();
@@ -64,15 +73,37 @@ public final class PlayerInteractListener implements Listener {
     if (wand.multiplier() != 0) {
       totalSellPrice *= wand.multiplier();
     }
+    if (wand.usageLimit() != -1) {
+      int usageLeft = event.getItem().getItemMeta().getPersistentDataContainer()
+          .getOrDefault(PDCKeys.UsageLeft, PersistentDataType.INTEGER, 0);
+      if (usageLeft - 1 <= 0) {
+        if (wand.removeWhenUsedUp()) {
+          event.getPlayer().getInventory().remove(event.getItem());
+        }
+        event.getPlayer().sendMessage(MiniMessage.miniMessage()
+            .deserialize(SimpleSellWand.getInstance().getConfigManager().getConfigData().messages().noUsesLeft()));
+      }
+      ItemMeta itemMeta = event.getItem().getItemMeta();
+      itemMeta.getPersistentDataContainer().set(PDCKeys.UsageLeft, PersistentDataType.INTEGER,
+          usageLeft - 1);
+      SimpleSellWand.getInstance().getLogger().info(String.valueOf(String.valueOf(event.getItem().getDamage())));
+      event.getItem().setItemMeta(itemMeta);
+    }
     Hooks.getEconomy().deposit(event.getPlayer(), totalSellPrice);
+    TagResolver.Builder tagBuilder = TagResolver.builder()
+        .resolver(Placeholder.unparsed("item_count", String.valueOf(itemsSold)))
+        .resolver(Placeholder.unparsed("sell_price", String.valueOf(totalSellPrice)));
+    if (wand.usageLimit() != -1) {
+      tagBuilder.resolver(
+          Placeholder.unparsed("uses_left", String.valueOf(event.getItem().getItemMeta().getPersistentDataContainer()
+              .getOrDefault(PDCKeys.UsageLeft, PersistentDataType.INTEGER, 0))));
+    } else {
+      tagBuilder.resolver(Placeholder.unparsed("uses_left", "∞"));
+    }
     event.getPlayer()
         .sendMessage(MiniMessage.miniMessage().deserialize(
             SimpleSellWand.getInstance().getConfigManager().getConfigData().messages().soldItems(),
-            Placeholder.unparsed("item_count", String.valueOf(itemsSold)),
-            Placeholder.unparsed("sell_price", String.valueOf(totalSellPrice)))); // TODO:
-                                                                                  // Cache
-                                                                                  // these
-                                                                                  // messages?
+            tagBuilder.build()));
     event.setCancelled(true);
   }
 }

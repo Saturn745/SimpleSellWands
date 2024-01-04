@@ -37,7 +37,6 @@ public final class ConfigManager<C> {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (InvalidConfigException e) {
-            configData = configHelper.getFactory().loadDefaults();
             SimpleSellWand.getInstance().getLogger().severe("Your configuration file is not valid. " +
                     "Check to make sure you have not made any syntax errors.");
             e.printStackTrace();

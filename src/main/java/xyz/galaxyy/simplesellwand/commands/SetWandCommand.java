@@ -11,8 +11,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import net.kyori.adventure.text.Component;
 import xyz.galaxyy.simplesellwand.PDCKeys;
 import xyz.galaxyy.simplesellwand.SimpleSellWand;
+import xyz.galaxyy.simplesellwand.config.WandConfig;
 
 public final class SetWandCommand extends Command {
   public SetWandCommand() {
@@ -39,8 +41,10 @@ public final class SetWandCommand extends Command {
       player.sendRichMessage("<red>That wand type does not exist.");
       return true;
     }
+    WandConfig wand = SimpleSellWand.getInstance().getConfigManager().getConfigData().wands().get(wandType);
     pdc.set(PDCKeys.WandType, PersistentDataType.STRING, wandType);
     pdc.set(PDCKeys.IsWand, PersistentDataType.BOOLEAN, true);
+    pdc.set(PDCKeys.UsageLeft, PersistentDataType.INTEGER, wand.usageLimit());
     itemStack.setItemMeta(itemMeta);
     player.sendRichMessage("<green>Successfully set your wand.");
     return true;

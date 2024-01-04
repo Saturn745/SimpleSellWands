@@ -26,6 +26,16 @@ public interface CoreConfig {
           public int multiplier() {
             return 0;
           }
+
+          @Override
+          public int usageLimit() {
+            return -1;
+          }
+
+          @Override
+          public boolean removeWhenUsedUp() {
+            return true;
+          }
         });
   }
 
