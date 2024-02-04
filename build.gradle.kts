@@ -73,7 +73,7 @@ hangarPublish {
     publications.register("plugin") {
         version.set(project.version as String) // use project version as publication version
         id.set("LuaLink")
-        channel.set("Stable")
+        channel.set("Release")
         changelog.set(System.getenv("GIT_COMMIT_MESSAGE")) // optional
 
         apiKey.set(System.getenv("HANGAR_API_KEY"))
@@ -120,4 +120,3 @@ tasks.test { useJUnitPlatform() }
 tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
 
 application { mainClass.set("MainKt") }
-
