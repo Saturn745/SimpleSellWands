@@ -1,6 +1,6 @@
+import io.papermc.hangarpublishplugin.model.Platforms
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
     kotlin("jvm") version "1.9.22"
@@ -10,9 +10,12 @@ plugins {
     id("maven-publish")
     application
 }
+
 val buildNum = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
+
 group = "xyz.galaxyy.lualink"
-version = "1.20.2-$buildNum"
+
+version = "1.20.4-$buildNum"
 
 repositories {
     mavenCentral()
@@ -23,6 +26,7 @@ repositories {
 
 val cloudVersion: String by project
 val luaKTVersion: String by project
+
 dependencies {
     testImplementation(kotlin("test"))
     library(kotlin("stdlib"))
@@ -58,9 +62,9 @@ modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set("lualink")
     versionNumber.set(version.toString())
-    versionType.set("beta")
+    versionType.set("release")
     uploadFile.set(tasks.jar.get())
-    gameVersions.addAll("1.20.1", "1.20.2")
+    gameVersions.addAll("1.20.1", "1.20.2", "1.20.3", "1.20.4")
     loaders.addAll("paper", "purpur")
     changelog.set(System.getenv("GIT_COMMIT_MESSAGE"))
 }
@@ -69,7 +73,7 @@ hangarPublish {
     publications.register("plugin") {
         version.set(project.version as String) // use project version as publication version
         id.set("LuaLink")
-        channel.set("Beta")
+        channel.set("Stable")
         changelog.set(System.getenv("GIT_COMMIT_MESSAGE")) // optional
 
         apiKey.set(System.getenv("HANGAR_API_KEY"))
@@ -77,7 +81,7 @@ hangarPublish {
         platforms {
             register(Platforms.PAPER) {
                 jar.set(tasks.jar.flatMap { it.archiveFile })
-                platformVersions.set(listOf("1.20.1", "1.20.2"))
+                platformVersions.set(listOf("1.20.1", "1.20.2", "1.20.3", "1.20.4"))
             }
         }
     }
@@ -93,12 +97,8 @@ publishing {
             from(components["java"])
 
             versionMapping {
-                usage("java-api") {
-                    fromResolutionOf("runtimeClasspath")
-                }
-                usage("java-runtime") {
-                    fromResolutionResult()
-                }
+                usage("java-api") { fromResolutionOf("runtimeClasspath") }
+                usage("java-runtime") { fromResolutionResult() }
             }
 
             repositories {
@@ -115,16 +115,9 @@ publishing {
     }
 }
 
+tasks.test { useJUnitPlatform() }
 
+tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
 
-tasks.test {
-    useJUnitPlatform()
-}
+application { mainClass.set("MainKt") }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
-}
-
-application {
-    mainClass.set("MainKt")
-}
