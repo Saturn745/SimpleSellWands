@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("net.minecrell.plugin-yml.paper") version "0.6.0"
-    id("com.modrinth.minotaur") version "2.8.2"
+    id("com.modrinth.minotaur") version "2.8.7"
 }
 
 val buildNum = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
