@@ -47,7 +47,7 @@ wands {
 | Key         | Type | Default Value | Description                                        |
 |-------------|------|---------------|----------------------------------------------------|
 | multiplier  | int  | 0             | The sell multiplier to apply when using this wand. |
-| usage-limit | int  | 0             | **NOT IMPLEMENTED YET**                            |
+| usage-limit | int  | 0             |The amount of times a player can use the wand before it "breaks" |
 
 
 # Supported Economy Plugins
