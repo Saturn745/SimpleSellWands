@@ -4,7 +4,7 @@ plugins {
   id("com.modrinth.minotaur") version "2.8.2"
 }
 
-val buildNum = System.getenv("GITHUB_RUN_NUMBER") ?: "SNAPSHOT"
+val buildNum = System.getenv("CI_PIPELINE_NUMBER") ?: "SNAPSHOT"
 
 group = "xyz.galaxyy.SimpleSellWand"
 
@@ -52,9 +52,7 @@ modrinth {
   uploadFile.set(tasks.jar.get())
   gameVersions.addAll("1.20.1", "1.20.2")
   loaders.addAll("paper", "purpur")
-  changelog.set(System.getenv("GIT_COMMIT_MESSAGE"))
+  changelog.set(System.getenv("CI_COMMIT_MESSAGE"))
 }
 
-tasks.test { useJUnitPlatform() }
-tasks.test { useJUnitPlatform() }
 tasks.test { useJUnitPlatform() }
