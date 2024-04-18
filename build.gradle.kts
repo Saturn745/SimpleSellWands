@@ -129,5 +129,9 @@ publishing {
 tasks.test { useJUnitPlatform() }
 
 tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
-
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 application { mainClass.set("MainKt") }
