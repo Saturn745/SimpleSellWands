@@ -57,3 +57,4 @@ modrinth {
 
 tasks.test { useJUnitPlatform() }
 tasks.test { useJUnitPlatform() }
+tasks.test { useJUnitPlatform() }
