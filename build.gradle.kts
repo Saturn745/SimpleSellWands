@@ -110,6 +110,17 @@ publishing {
                         password = System.getenv("GITHUB_TOKEN")
                     }
                 }
+                maven {
+                    name = "CodebergPackages"
+                    url = uri("https://codeberg.org/api/packages/LuaLink/maven")
+                    credentials(HttpHeaderCredentials::class.java) {
+                        name = "Authorization"
+                        value = "token ${System.getenv("CODEBERG_TOKEN")}"
+                    }
+                    authentication {
+                        val header by registering(HttpHeaderAuthentication::class)
+                    }
+                }
             }
         }
     }
