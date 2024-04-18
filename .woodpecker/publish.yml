@@ -5,8 +5,6 @@ when:
 steps:
   publish:
     image: gradle:jdk17-alpine@sha256:f72480c80e8ccd8d71656decd03969838f5f14ccd2147f1ae8f1ecbba49a829f
-    when:
-      event: push
     commands:
       - ./gradlew modrinth
     secrets:
