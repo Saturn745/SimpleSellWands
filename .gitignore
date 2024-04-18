@@ -42,3 +42,4 @@ gradle-app.setting
 .settings/
 .classpath
 bin/
+kls_database.db
