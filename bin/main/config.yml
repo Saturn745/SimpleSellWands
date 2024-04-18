@@ -1,9 +1,0 @@
-shop-plugin: none
-economy-plugin: none
-wands:
-  basic:
-    multiplier: 0 # No multiplier
-
-messages:
-  sold-items: "<green>Sold <item_count> for <yellow><sell_price></yellow>!</green>"
-  no-items-sold: "<red>No items were able to be sold.</red>"
