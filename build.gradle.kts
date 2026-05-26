@@ -19,7 +19,7 @@ repositories {
 dependencies {
   testImplementation(platform("org.junit:junit-bom:5.9.1"))
   testImplementation("org.junit.jupiter:junit-jupiter")
-  compileOnly("org.purpurmc.purpur:purpur-api:1.20.2-R0.1-SNAPSHOT")
+  compileOnly("org.purpurmc.purpur:purpur-api:26.1.2.build.2587-stable")
   paperLibrary("space.arim.dazzleconf:dazzleconf-ext-hocon:1.2.1")
   // Shops
   compileOnly(
