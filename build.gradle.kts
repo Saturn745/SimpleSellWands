@@ -1,7 +1,7 @@
 plugins {
   id("java")
   id("net.minecrell.plugin-yml.paper") version "0.6.0"
-  id("com.modrinth.minotaur") version "2.8.2"
+  id("com.modrinth.minotaur") version "2.9.0"
 }
 
 val buildNum = System.getenv("CI_PIPELINE_NUMBER") ?: "SNAPSHOT"
