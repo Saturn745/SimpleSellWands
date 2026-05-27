@@ -23,7 +23,7 @@ dependencies {
   paperLibrary("space.arim.dazzleconf:dazzleconf-ext-hocon:1.2.1")
   // Shops
   compileOnly(
-      "com.github.Gypopo:EconomyShopGUI-API:1.7.0"
+      "com.github.Gypopo:EconomyShopGUI-API:1.10.0"
   ) // EconomyShopGUI and EconomyShopGUI-Premium
 
   // Economys
