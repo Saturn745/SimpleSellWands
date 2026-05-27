@@ -4,7 +4,7 @@ when:
 
 steps:
   publish:
-    image: gradle:jdk17-alpine@sha256:f72480c80e8ccd8d71656decd03969838f5f14ccd2147f1ae8f1ecbba49a829f
+    image: gradle:jdk17-alpine@sha256:46a9f459ab66d3c357c4a19dc6b45922e9333f3f7064c6734654d5c11622ce6e
     commands:
       - ./gradlew modrinth
     secrets:
